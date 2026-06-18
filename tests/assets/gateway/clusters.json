@@ -1,68 +1,142 @@
 [
   {
     "cache": true,
-    "infrastructure": "tiny",
+    "infrastructure": "nova",
     "metrics": true,
-    "name": "tiny",
+    "name": "nova",
     "permissions": {
       "actions": [
-        "view-nodes",
-        "view-reservations",
-        "view-accounts",
-        "view-cache",
-        "view-stats",
-        "view-jobs",
-        "view-qos",
-        "view-partitions"
+        "stats-view",
+        "accounts-view",
+        "associations-view",
+        "qos-view",
+        "cache-reset",
+        "jobs-view",
+        "reservations-view",
+        "cache-view",
+        "jobs-view-past",
+        "nodes-view",
+        "partitions-view"
       ],
       "roles": [
         "admin"
       ]
     },
-    "racksdb": true
+    "racksdb": true,
+    "slurmdbd": {
+      "jobs_max_hours": 168
+    }
   },
   {
     "cache": true,
-    "infrastructure": "emulator",
-    "metrics": true,
-    "name": "atlas",
-    "permissions": {
-      "actions": [
-        "view-partitions",
-        "view-qos",
-        "view-reservations",
-        "view-cache",
-        "view-jobs",
-        "view-stats",
-        "view-accounts",
-        "view-nodes"
-      ],
-      "roles": [
-        "admin"
-      ]
-    },
-    "racksdb": true
-  },
-  {
-    "cache": true,
-    "infrastructure": "pocket",
+    "infrastructure": "vortex",
     "metrics": false,
-    "name": "pocket",
+    "name": "vortex",
     "permissions": {
       "actions": [
-        "view-nodes",
-        "view-qos",
-        "view-stats",
-        "view-cache",
-        "view-jobs",
-        "view-partitions",
-        "view-reservations",
-        "view-accounts"
+        "reservations-view",
+        "nodes-view",
+        "qos-view",
+        "cache-reset",
+        "associations-view",
+        "partitions-view",
+        "stats-view",
+        "jobs-view-past",
+        "cache-view",
+        "jobs-view",
+        "accounts-view"
       ],
       "roles": [
         "admin"
       ]
     },
-    "racksdb": false
+    "racksdb": true,
+    "slurmdbd": {
+      "jobs_max_hours": 168
+    }
+  },
+  {
+    "cache": true,
+    "infrastructure": "quark",
+    "metrics": false,
+    "name": "quark",
+    "permissions": {
+      "actions": [
+        "nodes-view",
+        "qos-view",
+        "jobs-view-past",
+        "reservations-view",
+        "associations-view",
+        "stats-view",
+        "cache-view",
+        "jobs-view",
+        "partitions-view",
+        "cache-reset",
+        "accounts-view"
+      ],
+      "roles": [
+        "admin"
+      ]
+    },
+    "racksdb": false,
+    "slurmdbd": {
+      "jobs_max_hours": 168
+    }
+  },
+  {
+    "cache": true,
+    "infrastructure": "zenith",
+    "metrics": true,
+    "name": "zenith",
+    "permissions": {
+      "actions": [
+        "accounts-view",
+        "reservations-view",
+        "cache-view",
+        "partitions-view",
+        "associations-view",
+        "stats-view",
+        "qos-view",
+        "jobs-view-past",
+        "cache-reset",
+        "jobs-view",
+        "nodes-view"
+      ],
+      "roles": [
+        "admin"
+      ]
+    },
+    "racksdb": true,
+    "slurmdbd": {
+      "jobs_max_hours": 168
+    }
+  },
+  {
+    "cache": true,
+    "infrastructure": "titan",
+    "metrics": true,
+    "name": "titan",
+    "permissions": {
+      "actions": [
+        "stats-view",
+        "associations-view",
+        "qos-view",
+        "cache-reset",
+        "partitions-view",
+        "cache-view",
+        "nodes-view",
+        "jobs-view",
+        "jobs-view-past",
+        "reservations-view",
+        "accounts-view"
+      ],
+      "roles": [
+        "admin"
+      ]
+    },
+    "racksdb": true,
+    "slurmdbd": {
+      "jobs_max_hours": 168
+    }
   }
 ]

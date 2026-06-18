@@ -7,11 +7,11 @@ import ResourcesView from '@/views/resources/ResourcesView.vue'
 import { init_plugins, getMockClusterDataPoller } from '../../lib/common'
 import type { RouterMock } from 'vue-router-mock'
 import { useRuntimeStore } from '@/stores/runtime'
-import type { ClusterNode } from '@/composables/GatewayAPI'
 import ErrorAlert from '@/components/ErrorAlert.vue'
 import nodes from '../../assets/nodes.json'
+import type { SlurmNode } from '@/composables/gateway/slurm/types'
 
-const mockClusterDataPoller = getMockClusterDataPoller<ClusterNode[]>()
+const mockClusterDataPoller = getMockClusterDataPoller<SlurmNode[]>()
 
 let router: RouterMock
 
@@ -29,7 +29,10 @@ describe('ResourcesView.vue', () => {
         racksdb: true,
         infrastructure: 'foo',
         metrics: true,
-        cache: true
+        cache: true,
+        slurmdbd: {
+          jobs_max_hours: 168
+        }
       }
     ]
   })
@@ -51,6 +54,7 @@ describe('ResourcesView.vue', () => {
     // Check that loading prop is passed correctly (should be false when loaded
     // is true)
     expect(thumbnail.props('loading')).toBe(false)
+    expect(thumbnail.props('mode')).toBe('nodes')
     // Check presence of ResourcesFiltersBar component
     wrapper.getComponent(ResourcesFiltersBar)
     // Check presence of table
@@ -119,5 +123,32 @@ describe('ResourcesView.vue', () => {
     runtime.resources.filters.states = ['up']
     await nextTick()
     expect(router.push).toHaveBeenCalledTimes(2)
+  })
+
+  test('initializes representation from query parameter', async () => {
+    mockClusterDataPoller.data.value = nodes
+    router.setQuery({ representation: 'cores' })
+    const wrapper = mount(ResourcesView, {
+      props: { cluster: 'foo' },
+      global: { stubs: { ResourcesDiagramThumbnail: true } }
+    })
+    await nextTick()
+    const thumbnail = wrapper.getComponent(ResourcesDiagramThumbnail)
+    expect(thumbnail.props('mode')).toBe('cores')
+  })
+
+  test('syncs representation changes with URL query', async () => {
+    const runtime = useRuntimeStore()
+    mockClusterDataPoller.data.value = nodes
+    mount(ResourcesView, {
+      props: { cluster: 'foo' },
+      global: { stubs: { ResourcesDiagramThumbnail: true } }
+    })
+    const callsBeforeClick = router.push.mock.calls.length
+    runtime.resources.representation = 'cores'
+    await nextTick()
+    const lastCall = router.push.mock.calls.at(-1)?.[0] as { query: { representation: string } }
+    expect(router.push.mock.calls.length).toBe(callsBeforeClick + 1)
+    expect(lastCall.query.representation).toBe('cores')
   })
 })

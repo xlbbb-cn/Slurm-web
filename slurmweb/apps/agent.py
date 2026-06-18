@@ -9,8 +9,6 @@ import urllib
 import logging
 
 from rfl.web.tokens import RFLTokenizedRBACWebApp
-from racksdb.errors import RacksDBSchemaError, RacksDBFormatError
-from racksdb.web.app import RacksDBWebBlueprint
 
 try:
     from werkzeug.middleware import dispatcher
@@ -34,9 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class SlurmwebAppAgent(SlurmwebWebApp, RFLTokenizedRBACWebApp):
-    NAME = "slurm-web-agent"
-    SITE_CONFIGURATION = "/etc/slurm-web/agent.ini"
-    SETTINGS_DEFINITION = "/usr/share/slurm-web/conf/agent.yml"
+    NAME = "slurm-web agent"
     VIEWS = {
         SlurmwebAppRoute("/version", views.version),
         SlurmwebAppRoute("/info", views.info),
@@ -44,6 +40,7 @@ class SlurmwebAppAgent(SlurmwebWebApp, RFLTokenizedRBACWebApp):
         SlurmwebAppRoute(f"/v{get_version()}/ping", views.ping),
         SlurmwebAppRoute(f"/v{get_version()}/stats", views.stats),
         SlurmwebAppRoute(f"/v{get_version()}/jobs", views.jobs),
+        SlurmwebAppRoute(f"/v{get_version()}/jobs/past", views.jobs_past),
         SlurmwebAppRoute(f"/v{get_version()}/job/<int:job>", views.job),
         SlurmwebAppRoute(f"/v{get_version()}/nodes", views.nodes),
         SlurmwebAppRoute(f"/v{get_version()}/node/<name>", views.node),
@@ -51,6 +48,7 @@ class SlurmwebAppAgent(SlurmwebWebApp, RFLTokenizedRBACWebApp):
         SlurmwebAppRoute(f"/v{get_version()}/qos", views.qos),
         SlurmwebAppRoute(f"/v{get_version()}/reservations", views.reservations),
         SlurmwebAppRoute(f"/v{get_version()}/accounts", views.accounts),
+        SlurmwebAppRoute(f"/v{get_version()}/associations", views.associations),
         SlurmwebAppRoute(f"/v{get_version()}/cache/stats", views.cache_stats),
         SlurmwebAppRoute(
             f"/v{get_version()}/cache/reset", views.cache_reset, methods=["POST"]
@@ -60,29 +58,6 @@ class SlurmwebAppAgent(SlurmwebWebApp, RFLTokenizedRBACWebApp):
 
     def __init__(self, seed):
         SlurmwebWebApp.__init__(self, seed)
-
-        # If enabled, load RacksDB blueprint and fail with error if unable to load
-        # schema or database.
-        if self.settings.racksdb.enabled:
-            try:
-                self.register_blueprint(
-                    RacksDBWebBlueprint(
-                        db=self.settings.racksdb.db,
-                        ext=self.settings.racksdb.extensions,
-                        schema=self.settings.racksdb.schema,
-                        drawings_schema=self.settings.racksdb.drawings_schema,
-                        default_drawing_parameters={
-                            "infrastructure": {
-                                "equipment_tags": self.settings.racksdb.tags
-                            }
-                        },
-                    ),
-                    url_prefix="/racksdb",
-                )
-            except RacksDBSchemaError as err:
-                logger.error("Unable to load RacksDB schema: %s", err)
-            except RacksDBFormatError as err:
-                logger.error("Unable to load RacksDB database: %s", err)
 
         if self.settings.policy.roles.exists():
             logger.debug("Select RBAC site roles policy %s", self.settings.policy.roles)
@@ -155,6 +130,10 @@ class SlurmwebAppAgent(SlurmwebWebApp, RFLTokenizedRBACWebApp):
             logger.critical("Configuration error: %s", err)
             sys.exit(1)
 
+        # Initialize RacksDB integration.
+        self.racksdb_active = False
+        self._init_racksdb()
+
         # Default RacksDB infrastructure is the cluster name.
         if self.settings.racksdb.infrastructure is None:
             self.settings.racksdb.infrastructure = self.settings.service.cluster
@@ -176,3 +155,60 @@ class SlurmwebAppAgent(SlurmwebWebApp, RFLTokenizedRBACWebApp):
             self.metrics_db = SlurmwebMetricsDB(
                 self.settings.metrics.host, self.settings.metrics.job
             )
+
+    def _init_racksdb(self):
+        """Load RacksDB blueprint according to enabled tri-state configuration."""
+        # If RacksDB is disabled, return immediately
+        if self.settings.racksdb.enabled is False:
+            return
+
+        # Try to load RacksDB library. If it fails, and RacksDB is enabled, exit with an
+        # error. If RacksDB is not explicitly enabled, log a warning and return.
+        try:
+            from racksdb.errors import RacksDBSchemaError, RacksDBFormatError
+            from racksdb.web.app import RacksDBWebBlueprint
+        except ModuleNotFoundError as err:
+            if self.settings.racksdb.enabled is True:
+                logger.critical("RacksDB library is not installed: %s", err)
+                sys.exit(1)
+            logger.warning("RacksDB library is not installed, disabling integration")
+            return
+
+        # Try to load RacksDB schema and database. If it fails, and RacksDB is enabled,
+        # exit with an error. If RacksDB is not explicitly enabled, log a warning and
+        # return.
+        try:
+            self.register_blueprint(
+                RacksDBWebBlueprint(
+                    db=self.settings.racksdb.db,
+                    ext=self.settings.racksdb.extensions,
+                    schema=self.settings.racksdb.schema,
+                    drawings_schema=self.settings.racksdb.drawings_schema,
+                    default_drawing_parameters={
+                        "infrastructure": {"equipment_tags": self.settings.racksdb.tags}
+                    },
+                ),
+                url_prefix="/racksdb",
+            )
+        except RacksDBSchemaError as err:
+            if self.settings.racksdb.enabled is True:
+                logger.critical("Unable to load RacksDB schema: %s", err)
+                sys.exit(1)
+            logger.warning(
+                "Unable to load RacksDB schema: %s, RacksDB integration will be "
+                "disabled",
+                err,
+            )
+            return
+        except RacksDBFormatError as err:
+            if self.settings.racksdb.enabled is True:
+                logger.critical("Unable to load RacksDB database: %s", err)
+                sys.exit(1)
+            logger.warning(
+                "Unable to load RacksDB database: %s, RacksDB integration will be "
+                "disabled",
+                err,
+            )
+            return
+
+        self.racksdb_active = True

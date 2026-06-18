@@ -13,7 +13,7 @@ import type { LocationQueryRaw } from 'vue-router'
 import { useRuntimeStore } from '@/stores/runtime'
 import ChartResourcesHistogram from '@/components/dashboard/ChartResourcesHistogram.vue'
 import ChartJobsHistogram from '@/components/dashboard/ChartJobsHistogram.vue'
-import { isMetricRange, type MetricRange } from '@/composables/GatewayAPI'
+import { type MetricRange, isMetricRange } from '@/composables/gateway/types/metrics'
 
 const { cluster } = defineProps<{ cluster: string }>()
 
@@ -79,6 +79,6 @@ onBeforeMount(() => {
       </span>
     </div>
   </div>
-  <ChartResourcesHistogram v-if="runtimeStore.hasPermission('view-nodes')" :cluster="cluster" />
-  <ChartJobsHistogram v-if="runtimeStore.hasPermission('view-jobs')" :cluster="cluster" />
+  <ChartResourcesHistogram v-if="runtimeStore.hasPermission('nodes-view')" :cluster="cluster" />
+  <ChartJobsHistogram v-if="runtimeStore.hasPermission('jobs-view')" :cluster="cluster" />
 </template>

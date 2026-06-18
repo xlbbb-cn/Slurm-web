@@ -33,9 +33,9 @@ The file must have one `[roles]` section to define roles and their memberships.
 In this section:
 
 * Keys are arbitrary *name of roles*,
-* Values are comma separated list of LDAP *users* and *groups* associated to
-  this role. The groups names must be prefixed by `@`. Special value `ALL` can
-  be used to designate all users authenticated on LDAP directory.
+* Values are comma separated list of *users* and *groups* associated to this
+  role. The groups names must be prefixed by `@`. Special value `ALL` can be used
+  to designate all xref:conf:auth/index.adoc[authenticated users].
 
 A special role name is `anonymous`. When this role is defined, it is
 automatically assigned to all users when authentication is disabled on Slurm-web
@@ -58,29 +58,36 @@ comma-separated <<#actions,list of actions>> granted to the role.
 [source,ini]
 ----
 [roles]
-# Members of scientists have the user role
-user=@rd,@it
-# Members of it group have the the admin role
-admin=@it
+user=@biology
+admin=njones
 
 [user]
-actions=view-stats,view-jobs,view-accounts
+actions=stats-view,jobs-view,jobs-view-past,nodes-view
 
 [admin]
-actions=view-nodes,view-partitions,view-qos,view-reservations
+actions=partitions-view,qos-view,accounts-view,reservations-view,associations-view
 ----
 
-Two roles are defined in this authorization policy:
+This policy defines *two roles*:
 
-* *user* role is assigned to all members of _rd_ and _it_ LDAP groups. Users
-  with this role have permissions on `view-stats`, `view-jobs` and
-  `view-accounts` actions.
-* *admin* role is assigned to all members of _it_ LDAP group. Users with this
-  role haves permissions on `view-nodes`, `view-partitions`, `view-qos` and
-  `view-reservations` actions.
+* *user* for members of _biology_ group. This role has permission on
+  `stats-view`, `jobs-view`, `jobs-view-past` and `nodes-view` actions.
+* *admin* for _njones_ user. This role has permission on `partitions-view`,
+  `qos-view`, `accounts-view`, `reservations-view` and `associations-view`
+  actions.
 
-Members of _it_ group inherit both *user* and *admin* roles with the union of
-all granted actions.
+User _njones_ who is also member of _biology_ group is granted both _user_ and
+_admin_ roles, she has access to everything:
+
+image:slurm-web_policy_admin.png[]
+
+Another user in _biology_ group can only view jobs and nodes:
+
+image:slurm-web_policy_user.png[]
+
+Access to the cluster is denied to all other users:
+
+image:slurm-web_policy_others.png[]
 ====
 
 .Show full example
@@ -97,30 +104,49 @@ user=ALL
 admin=@it,jdoe
 
 [anonymous]
-actions=view-stats
+actions=stats-view
 
 [user]
-actions=view-stats,view-jobs,view-accounts
+actions=stats-view,jobs-view,jobs-view-past,accounts-view
 
 [admin]
-actions=view-nodes,view-partitions,view-qos,view-reservations
+actions=nodes-view,partitions-view,qos-view,reservations-view
 ----
 
 Anonymous role is enabled in this authorization policy. It is assigned to all
 users when authentication is disabled in Slurm-web gateway. This role is only
-granted the `view-stats` action.
+granted the `stats-view` action.
 
 Two other roles are defined in this authorization policy:
 
 * *user* role is assigned to all users authenticated on LDAP directory. This
-  role gives permissions on `view-stats`, `view-jobs` and `view-accounts`
-  actions.
+  role gives permissions on `stats-view`, `jobs-view`, `jobs-view-past` and
+  `accounts-view` actions.
 * *admin* role is assigned to all members of _it_ LDAP group and _jdoe_
-  individual user. Users with this role haves permissions on `view-nodes`,
-  `view-partitions`, `view-qos` and `view-reservations` actions.
+  individual user. Users with this role haves permissions on `nodes-view`,
+  `partitions-view`, `qos-view` and `reservations-view` actions.
 
 Members of _it_ group and _jdoe_ inherit both *user* and *admin* roles with the
 union of all granted actions.
+====
+
+.Show example to restrict users to their own jobs
+[%collapsible]
+====
+[source,ini]
+----
+[roles]
+user=ALL
+
+[user]
+actions=stats-view,jobs-view-own,jobs-view-past-own,nodes-view
+----
+
+Authenticated users with the *user* role can access the _Jobs_ menu and see only
+their own active and terminated jobs. The `jobs-view-own` and
+`jobs-view-past-own` actions restrict job lists and details to the
+current user. Users with `jobs-view` or `jobs-view-past` still see all users'
+jobs for the corresponding scope.
 ====
 
 [#actions]

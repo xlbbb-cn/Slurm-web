@@ -7,16 +7,21 @@
 -->
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useAuthSession } from '@/composables/AuthSession'
 import { useRuntimeStore } from '@/stores/runtime'
 import { useGatewayAPI } from '@/composables/GatewayAPI'
 import { AuthenticationError } from '@/composables/HTTPErrors'
 import LoginServiceMessage from '@/components/login/LoginServiceMessage.vue'
 import InfoAlert from '@/components/InfoAlert.vue'
+import { useRuntimeConfiguration } from '@/plugins/runtimeConfiguration'
+import { useBranding } from '@/composables/Branding'
 
 const gateway = useGatewayAPI()
+const runtimeConfiguration = useRuntimeConfiguration()
+const { logoAlt, logoLogin, logoLoginDark } = useBranding()
 
 const username: Ref<string | null> = ref(null)
 const password: Ref<string | null> = ref(null)
@@ -26,7 +31,10 @@ const highlightPassword: Ref<boolean> = ref(false)
 const shakeLoginButton: Ref<boolean> = ref(false)
 
 const authStore = useAuthStore()
+const { login } = useAuthSession()
 const runtimeStore = useRuntimeStore()
+
+const oidcLoginUrl = computed(() => `${runtimeConfiguration.api_server}/api/oidc/login`)
 
 function reportAuthenticationError(message: string) {
   runtimeStore.reportError(`Authentication error: ${message}`)
@@ -55,7 +63,7 @@ async function submitLogin() {
   try {
     disableSubmission.value = true
     const response = await gateway.login({ user: username.value, password: password.value })
-    authStore.login(response.token, username.value, response.fullname, response.groups)
+    await login(response.token, response.login, response.fullname, response.groups)
   } catch (error) {
     if (error instanceof AuthenticationError) {
       reportAuthenticationError(error.message)
@@ -77,9 +85,20 @@ async function submitLogin() {
           class="w-full rounded-lg bg-white shadow-sm sm:max-w-md md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800"
         >
           <div class="space-y-4 p-6 sm:p-8 md:space-y-6">
-            <img src="/logo/slurm-web_logo.png" class="m-auto mb-8 block dark:hidden" />
-            <img src="/logo/slurm-web_logo_dark.png" class="m-auto mb-8 hidden dark:block" />
-            <form class="space-y-4 md:space-y-6" action="#" @submit.prevent="submitLogin">
+            <img :src="logoLogin" :alt="logoAlt" class="m-auto mb-8 block dark:hidden" />
+            <img :src="logoLoginDark" :alt="logoAlt" class="m-auto mb-8 hidden dark:block" />
+            <div
+              v-if="runtimeConfiguration.authentication_method === 'oidc'"
+              class="space-y-4 md:space-y-6"
+            >
+              <a
+                :href="oidcLoginUrl"
+                class="focus:ring-primary-300 dark:bg-slurmweb-dark dark:hover:bg-slurmweb dark:focus:ring-slurmweb-verydark bg-slurmweb hover:bg-slurmweb-dark block w-full rounded-lg px-5 py-2.5 text-center text-sm font-medium text-white focus:ring-4 focus:outline-hidden"
+              >
+                Sign in with OpenID
+              </a>
+            </div>
+            <form v-else class="space-y-4 md:space-y-6" action="#" @submit.prevent="submitLogin">
               <div>
                 <label
                   for="user"
@@ -114,7 +133,7 @@ async function submitLogin() {
               <button
                 type="submit"
                 :disabled="disableSubmission"
-                class="focus:ring-primary-300 dark:bg-slurmweb-dark dark:hover:bg-slurmweb dark:focus:ring-slurmweb-verydark bg-slurmweb hover:bg-slurmweb-dark w-full rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:ring-4 focus:outline-hidden disabled:bg-slate-300 disabled:dark:bg-slate-700"
+                class="focus:ring-primary-300 dark:bg-slurmweb-dark dark:hover:bg-slurmweb dark:focus:ring-slurmweb-verydark bg-slurmweb hover:bg-slurmweb-dark w-full cursor-pointer rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:ring-4 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-slate-300 disabled:dark:bg-slate-700"
                 :class="{ 'animate-horizontal-shake': shakeLoginButton }"
               >
                 <template v-if="disableSubmission">

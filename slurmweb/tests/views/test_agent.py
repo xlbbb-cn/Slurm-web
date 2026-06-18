@@ -8,9 +8,7 @@
 from unittest import mock
 import random
 
-import ClusterShell
-
-from racksdb.version import get_version as racksdb_get_version
+from ClusterShell.NodeSet import NodeSet
 
 from slurmweb.version import get_version
 from slurmweb.slurmrestd.errors import (
@@ -18,8 +16,11 @@ from slurmweb.slurmrestd.errors import (
     SlurmrestdInvalidResponseError,
 )
 from slurmweb.cache import CachingService
+from slurmweb.views.agent import racksdb_get_version
 
-from ..lib.agent import TestAgentBase
+from slurmweb.slurmrestd import TERMINAL_JOB_STATES
+
+from ..lib.agent import TestAgentBase, ModifyActionsInPolicy
 from ..lib.utils import all_slurm_api_versions, flask_404_description
 
 
@@ -40,11 +41,14 @@ class TestAgentViews(TestAgentBase):
         response = self.client.get("/info")
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json, dict)
-        self.assertEqual(len(response.json.keys()), 5)
+        self.assertEqual(len(response.json.keys()), 6)
         self.assertIn("cluster", response.json)
         self.assertEqual(response.json["cluster"], "test")
         self.assertIn("racksdb", response.json)
         self.assertIsInstance(response.json["racksdb"], dict)
+        self.assertIn("enabled", response.json["racksdb"])
+        self.assertIsInstance(response.json["racksdb"]["enabled"], bool)
+        self.assertEqual(response.json["racksdb"]["enabled"], self.app.racksdb_active)
         self.assertIn("version", response.json["racksdb"])
         self.assertEqual(response.json["racksdb"]["version"], racksdb_get_version())
         self.assertIn("infrastructure", response.json["racksdb"])
@@ -56,6 +60,8 @@ class TestAgentViews(TestAgentBase):
         self.assertIn("version", response.json)
         self.assertIsInstance(response.json["version"], str)
         self.assertEqual(response.json["version"], get_version())
+        self.assertIn("slurmdbd", response.json)
+        self.assertEqual(response.json["slurmdbd"]["jobs_max_hours"], 168)
 
     #
     # General error cases
@@ -171,9 +177,94 @@ class TestAgentViews(TestAgentBase):
         response = self.client.get(f"/v{get_version()}/jobs")
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json, list)
-        self.assertEqual(len(response.json), len(jobs_asset))
+        active_jobs_asset = [
+            job
+            for job in jobs_asset
+            if not any(state in TERMINAL_JOB_STATES for state in job["job_state"])
+        ]
+        self.assertGreater(
+            len(jobs_asset) - len(active_jobs_asset),
+            0,
+            "fixture must include terminal jobs to verify exclusion",
+        )
+        self.assertEqual(len(response.json), len(active_jobs_asset))
         for idx in range(len(response.json)):
-            self.assertEqual(response.json[idx]["job_id"], jobs_asset[idx]["job_id"])
+            self.assertEqual(
+                response.json[idx]["job_id"], active_jobs_asset[idx]["job_id"]
+            )
+            self.assertFalse(
+                any(
+                    state in TERMINAL_JOB_STATES
+                    for state in response.json[idx]["job_state"]
+                )
+            )
+
+    def test_request_jobs_own_only(self):
+        with ModifyActionsInPolicy(
+            self.app.policy, "user", remove="jobs-view", add="jobs-view-own"
+        ):
+            with mock.patch.object(
+                self.app.slurmrestd,
+                "jobs_current",
+                return_value=[
+                    {
+                        "job_id": 1,
+                        "user_name": "test",
+                        "job_state": ["RUNNING"],
+                        "nodes": "node1",
+                    },
+                    {
+                        "job_id": 2,
+                        "user_name": "other",
+                        "job_state": ["PENDING"],
+                        "nodes": "node2",
+                    },
+                ],
+            ):
+                response = self.client.get(f"/v{get_version()}/jobs")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json), 1)
+        self.assertEqual(response.json[0]["job_id"], 1)
+
+    def test_request_jobs_own_precedence(self):
+        # Add jobs-view-own permission to user role in addition to jobs-view permission.
+        # In this case, jobs-view should take precedence and user should see all jobs.
+        with ModifyActionsInPolicy(self.app.policy, "user", add="jobs-view-own"):
+            with mock.patch.object(
+                self.app.slurmrestd,
+                "jobs_current",
+                return_value=[
+                    {
+                        "job_id": 1,
+                        "user_name": "test",
+                        "job_state": ["RUNNING"],
+                        "nodes": "node1",
+                    },
+                    {
+                        "job_id": 2,
+                        "user_name": "other",
+                        "job_state": ["PENDING"],
+                        "nodes": "node2",
+                    },
+                ],
+            ):
+                response = self.client.get(f"/v{get_version()}/jobs")
+        self.assertEqual(len(response.json), 2)
+
+    def test_request_jobs_denied(self):
+        with ModifyActionsInPolicy(self.app.policy, "user", remove="jobs-view"):
+            response = self.client.get(f"/v{get_version()}/jobs")
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json,
+            {
+                "code": 403,
+                "description": (
+                    "User is not allowed to perform action jobs-view or jobs-view-own"
+                ),
+                "name": "Forbidden",
+            },
+        )
 
     @all_slurm_api_versions
     def test_request_jobs_node(self, slurm_version, api_version):
@@ -185,16 +276,17 @@ class TestAgentViews(TestAgentBase):
         )
 
         def terminated(job):
-            for terminated_state in ["COMPLETED", "FAILED", "TIMEOUT"]:
-                if terminated_state in job["job_state"]:
-                    return True
-            return False
+            return any(
+                state in TERMINAL_JOB_STATES for state in job.get("job_state", [])
+            )
 
         # Select random busy node on cluster
-        busy_nodes = ClusterShell.NodeSet.NodeSet()
+        busy_nodes = NodeSet()
         for job in jobs_asset:
-            if not terminated(job):
+            if not terminated(job) and job["nodes"]:
                 busy_nodes.update(job["nodes"])
+        if not len(busy_nodes):
+            self.skipTest("No current jobs with allocated nodes in test asset")
         random_busy_node = random.choice(busy_nodes)
 
         response = self.client.get(f"/v{get_version()}/jobs?node={random_busy_node}")
@@ -207,11 +299,91 @@ class TestAgentViews(TestAgentBase):
 
         # Check all jobs are not completed and have the random busy node allocated.
         for job in response.json:
-            self.assertNotIn(job["job_state"], ["COMPLETED", "FAILED", "TIMEOUT"])
+            self.assertFalse(
+                any(state in TERMINAL_JOB_STATES for state in job.get("job_state", []))
+            )
             self.assertIn(
                 random_busy_node,
-                ClusterShell.NodeSet.NodeSet(job["nodes"]),
+                NodeSet(job["nodes"]),
             )
+
+    @all_slurm_api_versions
+    def test_request_jobs_past(self, slurm_version, api_version):
+        self.setup_slurmrestd(slurm_version, api_version)
+        self.mock_slurmrestd_responses(
+            slurm_version,
+            api_version,
+            [("slurmdb-jobs", "jobs")],
+        )
+        response = self.client.get(f"/v{get_version()}/jobs/past?hours=6")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json, list)
+        self.assertGreater(len(response.json), 0)
+        for job in response.json:
+            for state in job.get("state", {}).get("current", []):
+                self.assertIn(state, TERMINAL_JOB_STATES)
+
+    def test_request_jobs_past_missing_hours(self):
+        self.setup_client()
+        response = self.client.get(f"/v{get_version()}/jobs/past")
+        self.assertEqual(response.status_code, 400)
+
+    def test_request_jobs_past_own_only(self):
+        with ModifyActionsInPolicy(
+            self.app.policy,
+            "user",
+            remove="jobs-view-past",
+            add="jobs-view-past-own",
+        ):
+            with mock.patch.object(
+                self.app.slurmrestd,
+                "jobs_past",
+                return_value=[
+                    {"job_id": 10, "user": "test", "state": {"current": ["COMPLETED"]}},
+                    {"job_id": 11, "user": "other", "state": {"current": ["FAILED"]}},
+                ],
+            ) as jobs_past:
+                response = self.client.get(f"/v{get_version()}/jobs/past?hours=6")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json), 1)
+        self.assertEqual(response.json[0]["job_id"], 10)
+        jobs_past.assert_called_once_with(6)
+
+    def test_request_jobs_past_own_precedence(self):
+        # Add jobs-view-past-own in addition to jobs-view-past: broad action wins.
+        with ModifyActionsInPolicy(self.app.policy, "user", add="jobs-view-past-own"):
+            with mock.patch.object(
+                self.app.slurmrestd,
+                "jobs_past",
+                return_value=[
+                    {"job_id": 10, "user": "test", "state": {"current": ["COMPLETED"]}},
+                    {"job_id": 11, "user": "other", "state": {"current": ["FAILED"]}},
+                ],
+            ):
+                response = self.client.get(f"/v{get_version()}/jobs/past?hours=6")
+        self.assertEqual(len(response.json), 2)
+
+    def test_request_jobs_past_denied(self):
+        with ModifyActionsInPolicy(
+            self.app.policy,
+            "user",
+            remove=("jobs-view-past", "jobs-view-past-own"),
+        ):
+            with mock.patch.object(self.app.slurmrestd, "jobs_past") as jobs_past:
+                response = self.client.get(f"/v{get_version()}/jobs/past?hours=6")
+        jobs_past.assert_not_called()
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json,
+            {
+                "code": 403,
+                "description": (
+                    "User is not allowed to perform action "
+                    "jobs-view-past or jobs-view-past-own"
+                ),
+                "name": "Forbidden",
+            },
+        )
 
     @all_slurm_api_versions
     def test_request_job_running(self, slurm_version, api_version):
@@ -342,6 +514,67 @@ class TestAgentViews(TestAgentBase):
                 "code": 404,
                 "description": "URL not found on slurmrestd: Job 1 not found",
                 "name": "Not Found",
+            },
+        )
+
+    def test_request_job_own_only(self):
+        with ModifyActionsInPolicy(
+            self.app.policy, "user", remove="jobs-view", add="jobs-view-own"
+        ):
+            with mock.patch.object(
+                self.app.slurmrestd,
+                "job",
+                return_value={"job_id": 1, "user": "test"},
+            ):
+                response = self.client.get(f"/v{get_version()}/job/1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {"job_id": 1, "user": "test"})
+
+    def test_request_job_own_only_not_found(self):
+        with ModifyActionsInPolicy(
+            self.app.policy, "user", remove="jobs-view", add="jobs-view-own"
+        ):
+            with mock.patch.object(
+                self.app.slurmrestd,
+                "job",
+                return_value={"job_id": 2, "user": "other"},
+            ):
+                response = self.client.get(f"/v{get_version()}/job/2")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json,
+            {
+                "code": 404,
+                "description": "Job not found",
+                "name": "Not Found",
+            },
+        )
+
+    def test_request_job_own_precedence(self):
+        # Add jobs-view-own in addition to jobs-view: broad action wins.
+        other_job = {"job_id": 2, "user": "other"}
+        with ModifyActionsInPolicy(self.app.policy, "user", add="jobs-view-own"):
+            with mock.patch.object(self.app.slurmrestd, "job", return_value=other_job):
+                response = self.client.get(f"/v{get_version()}/job/2")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, other_job)
+
+    def test_request_job_denied(self):
+        with ModifyActionsInPolicy(
+            self.app.policy, "user", remove=("jobs-view", "jobs-view-own")
+        ):
+            with mock.patch.object(self.app.slurmrestd, "job") as job_mock:
+                response = self.client.get(f"/v{get_version()}/job/1")
+        job_mock.assert_not_called()
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json,
+            {
+                "code": 403,
+                "description": (
+                    "User is not allowed to perform action jobs-view or jobs-view-own"
+                ),
+                "name": "Forbidden",
             },
         )
 
@@ -570,6 +803,26 @@ class TestAgentViews(TestAgentBase):
         self.assertEqual(len(response.json), len(accounts_asset))
         for idx in range(len(response.json)):
             self.assertEqual(response.json[idx]["name"], accounts_asset[idx]["name"])
+
+    @all_slurm_api_versions
+    def test_request_associations(self, slurm_version, api_version):
+        self.setup_slurmrestd(slurm_version, api_version)
+        [associations_asset] = self.mock_slurmrestd_responses(
+            slurm_version,
+            api_version,
+            [("slurmdb-associations", "associations")],
+        )
+        response = self.client.get(f"/v{get_version()}/associations")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json, list)
+        self.assertEqual(len(response.json), len(associations_asset))
+        for idx in range(len(response.json)):
+            self.assertEqual(
+                response.json[idx]["account"], associations_asset[idx]["account"]
+            )
+            self.assertEqual(
+                response.json[idx]["user"], associations_asset[idx]["user"]
+            )
 
     def test_cache_stats_disabled(self):
         with self.assertLogs("slurmweb", level="WARNING") as cm:

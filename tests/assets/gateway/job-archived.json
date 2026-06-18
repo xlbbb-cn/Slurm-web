@@ -2,7 +2,7 @@
   "association": {
     "account": "",
     "cluster": "hpc",
-    "id": 15,
+    "id": 10,
     "partition": "",
     "user": ""
   },
@@ -53,7 +53,7 @@
   "partition": "normal",
   "priority": {
     "infinite": false,
-    "number": 363,
+    "number": 636,
     "set": true
   },
   "qos": "normal",
@@ -124,7 +124,7 @@
         }
       },
       "step": {
-        "id": "3636.batch",
+        "id": "5522.batch",
         "name": "batch",
         "stderr": "",
         "stderr_expanded": "",
@@ -133,6 +133,7 @@
         "stdout": "",
         "stdout_expanded": ""
       },
+      "submit_line": "",
       "task": {
         "distribution": "Unknown"
       },
@@ -143,7 +144,7 @@
         "elapsed": 1,
         "end": {
           "infinite": false,
-          "number": 1763387484,
+          "number": 1780140257,
           "set": true
         },
         "limit": {
@@ -153,7 +154,7 @@
         },
         "start": {
           "infinite": false,
-          "number": 1763387483,
+          "number": 1780140256,
           "set": true
         },
         "suspended": 0,
@@ -209,11 +210,11 @@
   "submit_line": "",
   "time": {
     "elapsed": 1,
-    "eligible": 1763387482,
-    "end": 1763387484,
+    "eligible": 1780140255,
+    "end": 1780140257,
     "limit": {
       "infinite": false,
-      "number": 60,
+      "number": 1,
       "set": true
     },
     "planned": {
@@ -221,8 +222,8 @@
       "number": 1,
       "set": true
     },
-    "start": 1763387483,
-    "submission": 1763387482,
+    "start": 1780140256,
+    "submission": 1780140255,
     "suspended": 0,
     "system": {
       "microseconds": 0,
@@ -297,11 +298,10 @@
       }
     ]
   },
-  "used_gres": "",
-  "user": "mcarrillo",
+  "user": "rpowers",
   "wckey": {
     "flags": [],
     "wckey": ""
   },
-  "working_directory": "/home/mcarrillo"
+  "working_directory": "/home/rpowers"
 }

@@ -10,7 +10,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type { RouteLocation } from 'vue-router'
-import type { ClusterDescription } from '@/composables/GatewayAPI'
+import type { ClusterDescription } from '@/composables/gateway/types/cluster'
 import { useDashboardRuntimeStore } from './runtime/dashboard'
 import { useJobsRuntimeStore } from './runtime/jobs'
 import { useResourcesRuntimeStore } from './runtime/resources'
@@ -89,6 +89,10 @@ export const useRuntimeStore = defineStore('runtime', () => {
     )
   }
 
+  function hasAnyPermission(permissions: string[]): boolean {
+    return permissions.some((permission) => hasPermission(permission))
+  }
+
   function hasClusterPermission(clusterName: string, permission: string): boolean {
     const cluster = getCluster(clusterName)
     if (!cluster) return false
@@ -133,6 +137,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     getAllowedClusters,
     checkClusterAvailable,
     hasPermission,
+    hasAnyPermission,
     hasClusterPermission,
     addNotification,
     removeNotification,

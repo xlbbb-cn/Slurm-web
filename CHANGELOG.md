@@ -5,7 +5,193 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [7.0.0] - 2026-06-11
+
+### Added
+- gateway:
+  - Add support for SSO authentication with OpenID Connect (#268).
+  - Add support for branding of UI with custom colors, logos and favicon (#287).
+  - Add route to reverse-proxy `/jobs/past` to agents.
+- agent:
+  - Add route `/jobs/past` to query last terminated jobs from Slurm
+    accounting service.
+  - Implement (dummy) Slurm REST API adapter from v0.0.44 to v0.0.45.
+  - Enforce RBAC actions `jobs-view-own` and `jobs-view-past-own` to restrict
+    job lists and details to the authenticated user (#259).
+- front:
+  - Add OIDC login page and callback view for OpenID Connect SSO authentication.
+  - Support custom branding parameters as defined in UI runtime configuration
+    file.
+  - Add page to list last terminated jobs with configurable time window (#325).
+  - Support `jobs-view-own` and `jobs-view-past-own` permissions in jobs menu,
+    scope toggles and filters panel.
+  - Display job names in active and terminated jobs pages (#346).
+  - Add possibility to filter jobs by name (substring or regex) in active and
+    terminated jobs pages.
+- Add support for Slurm REST API v0.0.45 provided by Slurm 26.05+ (#718)
+- Add Dockerfile for multi-staged agent and gateway containers (#266).
+- Add compose file to quickly deploy for Slurm-web stack in mono-cluster mode.
+- gensession:
+  - Add `slurm-web gen-session-key` command to generate gateway session secret
+    file.
+  - Add `--set-ownership` option to require root and assign generated session
+    secret key to _slurm-web_ system user.
+- genjwt: Add `--set-ownership` option to require root and assign generated JWT
+  signing key to _slurm-web_ system user.
+- lib: Support `slurm-web gen-session-key` in compat wrapper.
+- pkgs:
+  - Add dependency on `RFL.authentication[jwt]` extra package provided
+    in RFL >= 1.8.0.
+  - Add gateway dependency on `RFL.authentication[ldap]` extra package provided
+    in RFL >= 1.8.0.
+  - Add gateway dependency on `RFL.authentication[oidc]` extra package provided
+    in RFL >= 1.8.0.
+  - Add dependency on `RFL.build` >= 1.8.0 for testing.
+  - Add container extra package for containers specific dependencies.
+- docs:
+  - Mention official support of Ubuntu 26.04 LTS _« Resolute Raccoon »_.
+  - Mention official support of Fedora 44.
+  - Add upgrade guide for migration from v6 to v7, with specific section for
+    gateway session key creation and authorization policy actions rename.
+  - Add Authentication pages with detailed LDAP and OIDC authentication flows
+    and setup guides.
+  - Add manpage for `slurm-web gen-session-key` command.
+  - Mention Slurm-web gateway session key creation in quickstart guide.
+  - Mention OIDC authentication feature in overview page.
+  - Mention OIDC authentication in integration section of architecture
+    documentation.
+  - Introduce a custom branding guide.
+  - Mention custom site branding feature in overview page.
+  - Mention new _jobs-view-past_ permission in quickstart guide and
+    authorization policy configuration guide.
+  - Document `jobs-view-own` and `jobs-view-past-own` actions in authorization
+    policy guide.
+  - Mention possibility to remove RacksDB load warning logs by disabling
+    integration in quickstart guide.
+  - Add container installation and quickstart documentation for Docker, Podman
+    and the reference Compose stack.
+  - Add container troubleshooting commands to check Slurm-web component versions
+    and inspect container access and application logs.
+- conf:
+  - Prepend default list of supported API versions in `[slurmrestd]` >
+    `versions` parameter with _0.0.45_.
+  - Add support for _oidc_ value for `[auth]` > `method` gateway parameter.
+  - Introduce new `[oidc]` section in gateway configuration.
+  - Introduce new `color_*`, `logo_*` and `favicon` parameters in `[ui]` section
+    of gateway configuration.
+  - Introduce _jobs-view-past_ action in authorization polic.
+  - Assign _jobs-view-past_ permission to all authenticated users in default
+    policy.
+  - Introduce `[slurmdbd]` section for `jobs_max_hours` parameter in agent
+    configuration.
+  - Add `[filters]` > `jobs_dbd` agent setting with filtered fields for SlurmDBD
+    accounting service list of jobs.
+  - Add `[cache]` > `jobs_past` agent cache setting to control expiration of
+    list of past jobs from SlurmDBD accounting service.
+  - Introduce `jobs-view-own` and `jobs-view-past-own` actions in authorization
+    policy.
+  - Add `name` in whitelisted fields for `jobs` and `jobs_dbd` default filters
+    in agent configuration.
+  - Document non-root usage and `--set-ownership` option in
+    `slurm-web-gen-jwt-key` and `slurm-web-gen-session-key` manpages.
+
+### Changed
+- gateway:
+  - Add user login in LDAP successful authentication JSON response, for
+    consistency with OIDC authentication response format.
+  - Expose `slurmdbd.jobs_max_hours` agent setting in `/clusters` endpoint for
+    frontend.
+- agent:
+  - Filter only actives jobs (ie. not terminated) in response of `/jobs`
+    route.
+  - Add `slurmdbd.jobs_max_hours` setting in agent info response.
+  - When `[racksdb]` > `enabled` is omitted in configuration, the agent tries to
+    load the database and schema and disables the feature if unable to load.
+    Explicit `enabled=yes` now fails agent startup on load errors (previously
+    fail-soft with error in logs).
+- front:
+  - Display active jobs (ie. not terminated) only in jobs page.
+  - Require Node.js >= 20.19.
+  - Update dependencies to latest versions (Vite 8, Vitest 4, ESLint 10,
+    TypeScript 6, Tailwind CSS 4.3, …).
+- genjwt: Allow `slurm-web gen-jwt-key` to run as non-root user to generate JWT
+  signing key without changing ownership or ACLs. Root is still required with
+  `--set-ownership` or `--with-slurm`.
+- gensession: Allow `slurm-web gen-session-key` to run as non-root user to
+  generate session secret key without changing ownership. Root is still required
+  with `--set-ownership`.
+- conf:
+  - Rename authorization policy actions from `view-*` to `{resource}-view`
+    (`stats-view`, `jobs-view`, `nodes-view`, `partitions-view`, `qos-view`,
+    `accounts-view`, `reservations-view`). Legacy `view-*` names remain accepted
+    in custom `policy.ini` files with deprecation warnings until updated.
+  - Update default vendor `policy.ini` to use new action names.
+  - Set `[racksdb]` > `enabled` agent configuration parameter default value to
+    unset.
+- pkgs:
+  - Bump minimal version of `RFL.authentication` to 1.8.0.
+  - Bump minimal version of `RFL.settings` to v1.8.0.
+  - Bump minimal version of `RacksDB[web]` to v0.7.0.
+- docs:
+  - Update configuration reference documentation.
+  - Update Slurm REST API supported versions section in architecture page.
+  - Update policy action names in quickstart guide and authorization policy
+    configuration guide.
+  - Move the illustrated authorization policy example from quickstart guide to
+    authorization policy configuration guide.
+
+### Fixed
+- front:
+  - Update bundled dependencies to fix CVE-2026-46625 (js-cookie).
+  - Use custom light color instead of indigo-100 for badge background color in
+    jobs and resources filters panels.
+- docs: typo in configuration guide. Contribution from @yosinn1-blip.
+
+### Removed
+- front: Drop Node.js 18 support.
+- pkgs: Drop testing dependency on _parameterized_ external library.
+- docs: Drop support of Fedora 42, Debian 12 _« bookworm »_ and Ubuntu 24.04
+  LTS.
+
+## [6.1.0] - 2026-05-12
+
+### Added
+- front: Add possibility to display cores allocations graphical representation
+  in resources page (#712).
+- docs:
+  - Add procedure to install Slurm-web on SLES (and openSUSE Leap) 15 and 16 in
+    quickstart guide and installation guide (#684).
+  - Add procedure to upgrade Slurm-web on SLES in update guide.
+  - Mention official support of RHEL 10 and compatibles (#653).
+  - Mention official support of Fedora 43 (#662).
+  - Configuration guides to setup production HTTP server (apache2, nginx and
+    caddy) on SLES.
+
+### Changed
+- agent: Make RacksDB library optional with lazy loading only when enabled in
+  configuration (#683). Contribution from @faganihajizada.
+- docs: brush up grammar in quickstart guide. Contribution from @fschlich.
+
+### Fixed
+- Lazy import apps modules to break down _agent_ and _gateway_ specific
+  dependencies when setting up CLI arguments (#690).
+- agent: Import of ClusterShell NodeSet class (#682). Contribution from
+  @faganihajizada.
+- front: Update dependencies to fix CVE-2025-13465, CVE-2026-2950, CVE-2026-4800
+  (lodash), CVE-2025-62718, CVE-2026-25639, CVE-2026-42033 (axios),
+  CVE-2026-27606 (rollup), CVE-2026-27903, CVE-2026-27904, CVE-2026-26996
+  (minimatch), CVE-2026-32141, CVE-2026-33228 (flatted), CVE-2026-33671,
+  CVE-2026-33672 (picomatch), CVE-2026-39363 (vite), GHSA-r4q5-vmmm-2653
+  (follow-redirects), CVE-2026-41305 (postcss) and CVE-2026-33750
+  (brace-expansion).
+- conf: Fix extension of filename mentioned in policy configuration file
+  comment. Contribution from @fschlich.
+- docs: Fix user/group name in agent uWSGI service diff context.
+
+### Removed
+- docs: Drop support of Fedora 41.
+
+## [6.0.0] - 2025-11-28
 
 ### Added
 - front:
@@ -15,6 +201,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     on a job running on a node (#663).
   - Add support for running under a subfolder prefix on HTTP server.
   - Add catch-all route to report page not found with button to clusters.
+  - Support requesting accounts and users associations with their limits.
+  - Add page to list account tree from Slurm accounting (#262).
+  - Add entry in left menu to access accounts page.
+  - Add page to get details of a specific account with all its user
+    associations.
+  - Add page to get details of a specific user with all its accounts
+    associations.
+  - Add links to user and account pages in job details page.
 - agent:
   - Automatically discover latest Slurm REST API version supported by
     `slurmrestd` among the list of Slurm-web supported versions declared in
@@ -26,9 +220,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Implement Slurm REST API adapter from v0.0.41 to v0.0.42.
   - Implement Slurm REST API adapter from v0.0.42 to v0.0.43.
   - Implement Slurm REST API adapter from v0.0.43 to v0.0.44.
+  - Add `/associations` route to get list of accounts, users and limits.
 - gateway:
   - Add `/agent/{cluster}/ping` route to reverse-proxy request to agent `/ping`
     endpoint.
+  - Add `/agent/{cluster}/associations` route to reverse-proxy request to agent
+    `/associations` endpoint.
   - Possibility to validate agent SSL/TLS certificate with custom CA certificate
     as an alternative to system default CA certificates (#254).
   - Replace at runtime base path placeholder in pre-built UI assets by URL path
@@ -42,6 +239,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     supported Slurm REST API versions.
   - Introduce `[agents]` > `cacert` gateway parameter for custom path to CA
     certificate to validate agent SSL/TLS certificate.
+  - Introduce `associations-view` action in authorization policy.
+  - Add permission on `associations-view` to all authenticated users in default
+    authorization policy.
+  - Introduce `[filters]` > `associations` parameter in agent configuration.
+  - Introduce `[cache]` > `associations` parameter in agent configuration.
+- cli: Introduce `slurm-web` unified executable with subcommands (#655).
+- docs: Add manpage for unified `slurm-web` command.
 
 ### Changed
 - front:
@@ -74,9 +278,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docs:
   - Update Slurm REST API supported versions section in architecture page.
   - Update configuration reference documentation.
+  - Rename `slurm-web-*` commands to `slurm-web` with subcommand in manpages.
+  - Update references to `slurm-web-*` commands with new `slurm-web` unified
+    command and subcommand.
+  - Update quickstart guide with skipped unique clusters list with permission.
+  - Update upgrade guide for migration from v5 to v6.
+- cli:
+  - All `/usr/libexec/slurm-web/slurm-web-*` executables are replaced by
+    `slurm-web` command in `$PATH` with subcommands (eg.
+    `slurm-web connect-check`).
+  - Add shell wrapper `slurm-web-compat` designed to replace previous command
+    and warn with deprecation notice.
+- lib: Update native agent and gateway services to execute unified `slurm-web`
+  command.
 
 ### Fixed
-- front: Dark mode rendering of info and error messages in clusters list (#661).
+- front:
+  - Dark mode rendering of info and error messages in clusters list (#661).
+  - Re-initialize all jobs filters in runtime store as soon as a filter is
+    present in query.
 - gateway: Use agent provided version instead of agent minimal version from
   settings to reverse proxy the requests (#656).
 - front: Update dependencies to fix CVE-2025-64718 (js-yaml), CVE-2025-64756
@@ -661,7 +881,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2024-05-13
 
-[unreleased]: https://github.com/rackslab/Slurm-web/compare/v5.2.0...HEAD
+[unreleased]: https://github.com/rackslab/Slurm-web/compare/v7.0.0...HEAD
+[7.0.0]: https://github.com/rackslab/Slurm-web/releases/tag/v7.0.0
+[6.1.0]: https://github.com/rackslab/Slurm-web/releases/tag/v6.1.0
+[6.0.0]: https://github.com/rackslab/Slurm-web/releases/tag/v6.0.0
 [5.2.0]: https://github.com/rackslab/Slurm-web/releases/tag/v5.2.0
 [5.1.0]: https://github.com/rackslab/Slurm-web/releases/tag/v5.1.0
 [5.0.0]: https://github.com/rackslab/Slurm-web/releases/tag/v5.0.0

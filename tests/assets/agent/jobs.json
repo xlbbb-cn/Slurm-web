@@ -1,1 +1,88 @@
-[]
+[
+  {
+    "account": "optic",
+    "cpus": {
+      "infinite": false,
+      "number": 128,
+      "set": true
+    },
+    "gres_detail": [],
+    "job_id": 6526,
+    "job_state": [
+      "PENDING"
+    ],
+    "name": "ffmpeg-sweep-612",
+    "node_count": {
+      "infinite": false,
+      "number": 2,
+      "set": true
+    },
+    "nodes": "",
+    "partition": "normal",
+    "priority": {
+      "infinite": false,
+      "number": 363,
+      "set": true
+    },
+    "qos": "normal",
+    "sockets_per_node": {
+      "infinite": false,
+      "number": 0,
+      "set": false
+    },
+    "state_reason": "BeginTime",
+    "tasks": {
+      "infinite": false,
+      "number": 128,
+      "set": true
+    },
+    "tres_per_job": "",
+    "tres_per_node": "",
+    "tres_per_socket": "",
+    "tres_per_task": "",
+    "user_name": "arodriguez"
+  },
+  {
+    "account": "optic",
+    "cpus": {
+      "infinite": false,
+      "number": 1,
+      "set": true
+    },
+    "gres_detail": [],
+    "job_id": 6527,
+    "job_state": [
+      "RUNNING"
+    ],
+    "name": "chemistry-task-0198",
+    "node_count": {
+      "infinite": false,
+      "number": 1,
+      "set": true
+    },
+    "nodes": "cn1",
+    "partition": "normal",
+    "priority": {
+      "infinite": false,
+      "number": 363,
+      "set": true
+    },
+    "qos": "normal",
+    "sockets_per_node": {
+      "infinite": false,
+      "number": 0,
+      "set": false
+    },
+    "state_reason": "None",
+    "tasks": {
+      "infinite": false,
+      "number": 1,
+      "set": true
+    },
+    "tres_per_job": "",
+    "tres_per_node": "",
+    "tres_per_socket": "",
+    "tres_per_task": "",
+    "user_name": "arodriguez"
+  }
+]

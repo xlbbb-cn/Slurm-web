@@ -12,6 +12,7 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { useRuntimeConfiguration } from '@/plugins/runtimeConfiguration'
 import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '@/views/LoginView.vue'
+import OidcCallbackView from '@/views/OidcCallbackView.vue'
 import AnonymousView from '@/views/AnonymousView.vue'
 import SignoutView from '@/views/SignoutView.vue'
 import SettingsLayout from '@/components/settings/SettingsLayout.vue'
@@ -21,6 +22,7 @@ import SettingsAccountView from '@/views/settings/SettingsAccount.vue'
 import SettingsCacheView from '@/views/settings/SettingsCache.vue'
 import ClustersView from '@/views/ClustersView.vue'
 import JobsView from '@/views/JobsView.vue'
+import JobsPastView from '@/views/JobsPastView.vue'
 import JobView from '@/views/JobView.vue'
 import ResourcesView from '@/views/resources/ResourcesView.vue'
 import ResourcesDiagramNodesView from '@/views/resources/ResourcesDiagramNodesView.vue'
@@ -28,6 +30,9 @@ import ResourcesDiagramCoresView from '@/views/resources/ResourcesDiagramCoresVi
 import NodeView from '@/views/NodeView.vue'
 import QosView from '@/views/QosView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
+import AccountsView from '@/views/AccountsView.vue'
+import AccountView from '@/views/AccountView.vue'
+import UserView from '@/views/UserView.vue'
 import JobsStatusBadges from '@/views/tests/JobsStatusBadges.vue'
 import NodesStatusBadges from '@/views/tests/NodesStatusBadges.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
@@ -45,6 +50,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView
+    },
+    {
+      path: '/auth/oidc/callback',
+      name: 'oidc-callback',
+      component: OidcCallbackView
     },
     {
       path: '/anonymous',
@@ -115,6 +125,12 @@ const router = createRouter({
           props: true
         },
         {
+          path: 'jobs/past',
+          name: 'jobs-past',
+          component: JobsPastView,
+          props: true
+        },
+        {
           path: 'job/:id',
           name: 'job',
           component: JobView,
@@ -158,6 +174,24 @@ const router = createRouter({
           name: 'reservations',
           component: ReservationsView,
           props: true
+        },
+        {
+          path: 'accounts',
+          name: 'accounts',
+          component: AccountsView,
+          props: true
+        },
+        {
+          path: 'accounts/:account',
+          name: 'account',
+          component: AccountView,
+          props: true
+        },
+        {
+          path: 'users/:user',
+          name: 'user',
+          component: UserView,
+          props: true
         }
       ]
     },
@@ -183,6 +217,7 @@ router.beforeEach(async (to, from) => {
   /* redirect to login page if not logged in and trying to access a restricted page */
   const publicPages = [
     '/login',
+    '/auth/oidc/callback',
     '/signout',
     '/anonymous',
     '/tests/jobs-status-badges',

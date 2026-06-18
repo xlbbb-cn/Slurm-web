@@ -1,0 +1,1370 @@
+[
+  {
+    "account": "root",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": ""
+  },
+  {
+    "account": "root",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "root"
+  },
+  {
+    "account": "admin",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "root",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": ""
+  },
+  {
+    "account": "admin",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "jli"
+  },
+  {
+    "account": "biology",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "root",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": ""
+  },
+  {
+    "account": "biology",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "jrasmussen"
+  },
+  {
+    "account": "biology",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "jshelton"
+  },
+  {
+    "account": "biology",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "mwilliams"
+  },
+  {
+    "account": "biology",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "rpowers"
+  },
+  {
+    "account": "physic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "root",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": ""
+  },
+  {
+    "account": "acoustic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "physic",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": ""
+  },
+  {
+    "account": "acoustic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "ccollins"
+  },
+  {
+    "account": "acoustic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "madams"
+  },
+  {
+    "account": "acoustic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "tkirby"
+  },
+  {
+    "account": "optic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "physic",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": ""
+  },
+  {
+    "account": "optic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "arodriguez"
+  },
+  {
+    "account": "optic",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": "jhayes"
+  },
+  {
+    "account": "scientists",
+    "max": {
+      "jobs": {
+        "accruing": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "active": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        },
+        "per": {
+          "accruing": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "count": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "submitted": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          },
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        },
+        "total": {
+          "infinite": true,
+          "number": 0,
+          "set": false
+        }
+      },
+      "per": {
+        "account": {
+          "wall_clock": {
+            "infinite": true,
+            "number": 0,
+            "set": false
+          }
+        }
+      },
+      "tres": {
+        "group": {
+          "active": [],
+          "minutes": []
+        },
+        "minutes": {
+          "per": {
+            "job": []
+          },
+          "total": []
+        },
+        "per": {
+          "job": [],
+          "node": []
+        },
+        "total": []
+      }
+    },
+    "parent_account": "root",
+    "qos": [
+      "normal",
+      "study"
+    ],
+    "user": ""
+  }
+]

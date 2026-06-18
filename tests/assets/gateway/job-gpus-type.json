@@ -1,13 +1,13 @@
 {
   "accrue_time": {
     "infinite": false,
-    "number": 1763129106,
+    "number": 1780139577,
     "set": true
   },
   "association": {
     "account": "",
     "cluster": "hpc",
-    "id": 10,
+    "id": 16,
     "partition": "",
     "user": ""
   },
@@ -23,7 +23,7 @@
     "number": 1,
     "set": true
   },
-  "current_working_directory": "/home/progers",
+  "current_working_directory": "/home/ccollins",
   "derived_exit_code": {
     "return_code": {
       "infinite": false,
@@ -63,13 +63,13 @@
   "gres_detail": [
     "gpu:h100:1(IDX:0)"
   ],
-  "group": "scientists",
+  "group": "slurm",
   "last_sched_evaluation": {
     "infinite": false,
-    "number": 1763129106,
+    "number": 1780139578,
     "set": true
   },
-  "name": "wrap",
+  "name": "allocation",
   "node_count": {
     "infinite": false,
     "number": 1,
@@ -79,7 +79,7 @@
   "partition": "gpu",
   "priority": {
     "infinite": false,
-    "number": 272,
+    "number": 181,
     "set": true
   },
   "qos": "normal",
@@ -97,8 +97,8 @@
     "reason": "None"
   },
   "stderr_expanded": "",
-  "stdin_expanded": "/dev/null",
-  "stdout_expanded": "/home/progers/slurm-32.out",
+  "stdin_expanded": "",
+  "stdout_expanded": "/home/ccollins/slurm-5452.out",
   "steps": [
     {
       "CPU": {
@@ -159,7 +159,7 @@
         }
       },
       "step": {
-        "id": "32.batch",
+        "id": "5452.batch",
         "name": "batch",
         "stderr": "",
         "stderr_expanded": "",
@@ -168,6 +168,7 @@
         "stdout": "",
         "stdout_expanded": ""
       },
+      "submit_line": "",
       "task": {
         "distribution": "Unknown"
       },
@@ -175,7 +176,7 @@
         "count": 1
       },
       "time": {
-        "elapsed": 1,
+        "elapsed": 0,
         "end": {
           "infinite": false,
           "number": 0,
@@ -188,7 +189,7 @@
         },
         "start": {
           "infinite": false,
-          "number": 1763129106,
+          "number": 1780139578,
           "set": true
         },
         "suspended": 0,
@@ -224,6 +225,18 @@
             "id": 4,
             "name": "",
             "type": "node"
+          },
+          {
+            "count": 1,
+            "id": 1001,
+            "name": "gpu",
+            "type": "gres"
+          },
+          {
+            "count": 1,
+            "id": 1002,
+            "name": "gpu:h100",
+            "type": "gres"
           }
         ],
         "consumed": {
@@ -241,15 +254,15 @@
       }
     }
   ],
-  "submit_line": "sbatch --time 1 --wrap sleep 30 && true --partition gpu --gpus h100:1",
+  "submit_line": "",
   "tasks": {
     "infinite": false,
     "number": 1,
     "set": true
   },
   "time": {
-    "elapsed": 1,
-    "eligible": 1763129106,
+    "elapsed": 0,
+    "eligible": 1780139577,
     "end": 0,
     "limit": {
       "infinite": false,
@@ -258,11 +271,11 @@
     },
     "planned": {
       "infinite": false,
-      "number": 0,
+      "number": 1,
       "set": true
     },
-    "start": 1763129106,
-    "submission": 1763129106,
+    "start": 1780139578,
+    "submission": 1780139577,
     "suspended": 0,
     "system": {
       "microseconds": 0,
@@ -308,6 +321,18 @@
         "id": 5,
         "name": "",
         "type": "billing"
+      },
+      {
+        "count": 1,
+        "id": 1001,
+        "name": "gpu",
+        "type": "gres"
+      },
+      {
+        "count": 1,
+        "id": 1002,
+        "name": "gpu:h100",
+        "type": "gres"
       }
     ],
     "requested": [
@@ -334,6 +359,18 @@
         "id": 5,
         "name": "",
         "type": "billing"
+      },
+      {
+        "count": 1,
+        "id": 1001,
+        "name": "gpu",
+        "type": "gres"
+      },
+      {
+        "count": 1,
+        "id": 1002,
+        "name": "gpu:h100",
+        "type": "gres"
       }
     ]
   },
@@ -341,12 +378,11 @@
   "tres_per_node": "",
   "tres_per_socket": "",
   "tres_per_task": "",
-  "tres_req_str": "cpu=1,mem=512M,node=1,billing=1",
-  "used_gres": "",
-  "user": "progers",
+  "tres_req_str": "cpu=1,mem=512M,node=1,billing=1,gres/gpu=1,gres/gpu:h100=1",
+  "user": "ccollins",
   "wckey": {
     "flags": [],
     "wckey": ""
   },
-  "working_directory": "/home/progers"
+  "working_directory": "/home/ccollins"
 }

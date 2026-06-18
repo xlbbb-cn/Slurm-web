@@ -7,7 +7,7 @@
       "boot_time": {
         "set": true,
         "infinite": false,
-        "number": 1758266697
+        "number": 1779954835
       },
       "tls_cert_last_renewal": {
         "set": true,
@@ -19,11 +19,11 @@
       "cores": 32,
       "specialized_cores": 0,
       "cpu_binding": 0,
-      "cpu_load": 89,
+      "cpu_load": 66,
       "free_mem": {
         "set": true,
         "infinite": false,
-        "number": 492
+        "number": 937
       },
       "cpus": 64,
       "effective_cpus": 64,
@@ -54,7 +54,7 @@
       "last_busy": {
         "set": true,
         "infinite": false,
-        "number": 1763370391
+        "number": 1780304335
       },
       "mcs_label": "",
       "specialized_memory": 0,
@@ -67,7 +67,7 @@
       "state": [
         "IDLE"
       ],
-      "operating_system": "Linux 6.12.43+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.43-1 (2025-08-27)",
+      "operating_system": "Linux 6.12.74+deb13+1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.74-2 (2026-03-08)",
       "owner": "",
       "partitions": [
         "normal"
@@ -97,7 +97,7 @@
       "slurmd_start_time": {
         "set": true,
         "infinite": false,
-        "number": 1763117550
+        "number": 1779965264
       },
       "sockets": 2,
       "threads": 1,
@@ -114,222 +114,7 @@
       "boot_time": {
         "set": true,
         "infinite": false,
-        "number": 1758266697
-      },
-      "tls_cert_last_renewal": {
-        "set": true,
-        "infinite": false,
-        "number": 0
-      },
-      "cert_flags": [],
-      "cluster_name": "",
-      "cores": 32,
-      "specialized_cores": 0,
-      "cpu_binding": 0,
-      "cpu_load": 89,
-      "free_mem": {
-        "set": true,
-        "infinite": false,
-        "number": 492
-      },
-      "cpus": 64,
-      "effective_cpus": 64,
-      "specialized_cpus": "",
-      "energy": {
-        "average_watts": 0,
-        "base_consumed_energy": 0,
-        "consumed_energy": 0,
-        "current_watts": {
-          "set": true,
-          "infinite": false,
-          "number": 0
-        },
-        "previous_consumed_energy": 0,
-        "last_collected": 0
-      },
-      "external_sensors": {},
-      "extra": "",
-      "power": {},
-      "features": [],
-      "active_features": [],
-      "gpu_spec": "",
-      "gres": "",
-      "gres_drained": "N/A",
-      "gres_used": "",
-      "instance_id": "",
-      "instance_type": "",
-      "last_busy": {
-        "set": true,
-        "infinite": false,
-        "number": 1763370393
-      },
-      "mcs_label": "",
-      "specialized_memory": 0,
-      "name": "cn2",
-      "next_state_after_reboot": [
-        "INVALID"
-      ],
-      "address": "cn2",
-      "hostname": "cn2",
-      "state": [
-        "IDLE"
-      ],
-      "operating_system": "Linux 6.12.43+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.43-1 (2025-08-27)",
-      "owner": "",
-      "partitions": [
-        "normal"
-      ],
-      "port": 6818,
-      "real_memory": 131072,
-      "res_cores_per_gpu": 0,
-      "comment": "",
-      "reason": "",
-      "reason_changed_at": {
-        "set": true,
-        "infinite": false,
-        "number": 0
-      },
-      "reason_set_by_user": "",
-      "resume_after": {
-        "set": true,
-        "infinite": false,
-        "number": 0
-      },
-      "reservation": "",
-      "alloc_memory": 0,
-      "alloc_cpus": 0,
-      "alloc_idle_cpus": 64,
-      "tres_used": "",
-      "tres_weighted": 0.0,
-      "slurmd_start_time": {
-        "set": true,
-        "infinite": false,
-        "number": 1763117550
-      },
-      "sockets": 2,
-      "threads": 1,
-      "temporary_disk": 0,
-      "weight": 1,
-      "topology": "",
-      "tres": "cpu=64,mem=128G,billing=64",
-      "version": "25.05.4"
-    },
-    {
-      "architecture": "x86_64",
-      "burstbuffer_network_address": "",
-      "boards": 1,
-      "boot_time": {
-        "set": true,
-        "infinite": false,
-        "number": 1758266697
-      },
-      "tls_cert_last_renewal": {
-        "set": true,
-        "infinite": false,
-        "number": 0
-      },
-      "cert_flags": [],
-      "cluster_name": "",
-      "cores": 32,
-      "specialized_cores": 0,
-      "cpu_binding": 0,
-      "cpu_load": 89,
-      "free_mem": {
-        "set": true,
-        "infinite": false,
-        "number": 492
-      },
-      "cpus": 64,
-      "effective_cpus": 64,
-      "specialized_cpus": "",
-      "energy": {
-        "average_watts": 0,
-        "base_consumed_energy": 0,
-        "consumed_energy": 0,
-        "current_watts": {
-          "set": true,
-          "infinite": false,
-          "number": 0
-        },
-        "previous_consumed_energy": 0,
-        "last_collected": 0
-      },
-      "external_sensors": {},
-      "extra": "",
-      "power": {},
-      "features": [],
-      "active_features": [],
-      "gpu_spec": "",
-      "gres": "",
-      "gres_drained": "N/A",
-      "gres_used": "",
-      "instance_id": "",
-      "instance_type": "",
-      "last_busy": {
-        "set": true,
-        "infinite": false,
-        "number": 1763370391
-      },
-      "mcs_label": "",
-      "specialized_memory": 0,
-      "name": "cn3",
-      "next_state_after_reboot": [
-        "INVALID"
-      ],
-      "address": "cn3",
-      "hostname": "cn3",
-      "state": [
-        "IDLE",
-        "DRAIN"
-      ],
-      "operating_system": "Linux 6.12.43+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.43-1 (2025-08-27)",
-      "owner": "",
-      "partitions": [
-        "normal"
-      ],
-      "port": 6818,
-      "real_memory": 131072,
-      "res_cores_per_gpu": 0,
-      "comment": "",
-      "reason": "ECC memory error",
-      "reason_changed_at": {
-        "set": true,
-        "infinite": false,
-        "number": 1763370757
-      },
-      "reason_set_by_user": "slurm",
-      "resume_after": {
-        "set": true,
-        "infinite": false,
-        "number": 0
-      },
-      "reservation": "",
-      "alloc_memory": 0,
-      "alloc_cpus": 0,
-      "alloc_idle_cpus": 64,
-      "tres_used": "",
-      "tres_weighted": 0.0,
-      "slurmd_start_time": {
-        "set": true,
-        "infinite": false,
-        "number": 1763117550
-      },
-      "sockets": 2,
-      "threads": 1,
-      "temporary_disk": 0,
-      "weight": 1,
-      "topology": "",
-      "tres": "cpu=64,mem=128G,billing=64",
-      "version": "25.05.4"
-    },
-    {
-      "architecture": "x86_64",
-      "burstbuffer_network_address": "",
-      "boards": 1,
-      "boot_time": {
-        "set": true,
-        "infinite": false,
-        "number": 1758266697
+        "number": 1779954835
       },
       "tls_cert_last_renewal": {
         "set": true,
@@ -345,7 +130,7 @@
       "free_mem": {
         "set": true,
         "infinite": false,
-        "number": 492
+        "number": 937
       },
       "cpus": 64,
       "effective_cpus": 64,
@@ -376,20 +161,20 @@
       "last_busy": {
         "set": true,
         "infinite": false,
-        "number": 1763370393
+        "number": 1780304336
       },
       "mcs_label": "",
       "specialized_memory": 0,
-      "name": "cn4",
+      "name": "cn2",
       "next_state_after_reboot": [
         "INVALID"
       ],
-      "address": "cn4",
-      "hostname": "cn4",
+      "address": "cn2",
+      "hostname": "cn2",
       "state": [
         "DOWN"
       ],
-      "operating_system": "Linux 6.12.43+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.43-1 (2025-08-27)",
+      "operating_system": "Linux 6.12.74+deb13+1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.74-2 (2026-03-08)",
       "owner": "",
       "partitions": [
         "normal"
@@ -402,7 +187,7 @@
       "reason_changed_at": {
         "set": true,
         "infinite": false,
-        "number": 1763370757
+        "number": 1780305455
       },
       "reason_set_by_user": "slurm",
       "resume_after": {
@@ -419,7 +204,7 @@
       "slurmd_start_time": {
         "set": true,
         "infinite": false,
-        "number": 1763117550
+        "number": 1779965264
       },
       "sockets": 2,
       "threads": 1,
@@ -436,7 +221,222 @@
       "boot_time": {
         "set": true,
         "infinite": false,
-        "number": 1758266697
+        "number": 1779954835
+      },
+      "tls_cert_last_renewal": {
+        "set": true,
+        "infinite": false,
+        "number": 0
+      },
+      "cert_flags": [],
+      "cluster_name": "",
+      "cores": 32,
+      "specialized_cores": 0,
+      "cpu_binding": 0,
+      "cpu_load": 66,
+      "free_mem": {
+        "set": true,
+        "infinite": false,
+        "number": 937
+      },
+      "cpus": 64,
+      "effective_cpus": 64,
+      "specialized_cpus": "",
+      "energy": {
+        "average_watts": 0,
+        "base_consumed_energy": 0,
+        "consumed_energy": 0,
+        "current_watts": {
+          "set": true,
+          "infinite": false,
+          "number": 0
+        },
+        "previous_consumed_energy": 0,
+        "last_collected": 0
+      },
+      "external_sensors": {},
+      "extra": "",
+      "power": {},
+      "features": [],
+      "active_features": [],
+      "gpu_spec": "",
+      "gres": "",
+      "gres_drained": "N/A",
+      "gres_used": "",
+      "instance_id": "",
+      "instance_type": "",
+      "last_busy": {
+        "set": true,
+        "infinite": false,
+        "number": 1780304335
+      },
+      "mcs_label": "",
+      "specialized_memory": 0,
+      "name": "cn3",
+      "next_state_after_reboot": [
+        "INVALID"
+      ],
+      "address": "cn3",
+      "hostname": "cn3",
+      "state": [
+        "IDLE",
+        "DRAIN"
+      ],
+      "operating_system": "Linux 6.12.74+deb13+1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.74-2 (2026-03-08)",
+      "owner": "",
+      "partitions": [
+        "normal"
+      ],
+      "port": 6818,
+      "real_memory": 131072,
+      "res_cores_per_gpu": 0,
+      "comment": "",
+      "reason": "ECC memory error",
+      "reason_changed_at": {
+        "set": true,
+        "infinite": false,
+        "number": 1780305455
+      },
+      "reason_set_by_user": "slurm",
+      "resume_after": {
+        "set": true,
+        "infinite": false,
+        "number": 0
+      },
+      "reservation": "",
+      "alloc_memory": 0,
+      "alloc_cpus": 0,
+      "alloc_idle_cpus": 64,
+      "tres_used": "",
+      "tres_weighted": 0.0,
+      "slurmd_start_time": {
+        "set": true,
+        "infinite": false,
+        "number": 1779965264
+      },
+      "sockets": 2,
+      "threads": 1,
+      "temporary_disk": 0,
+      "weight": 1,
+      "topology": "",
+      "tres": "cpu=64,mem=128G,billing=64",
+      "version": "25.05.4"
+    },
+    {
+      "architecture": "x86_64",
+      "burstbuffer_network_address": "",
+      "boards": 1,
+      "boot_time": {
+        "set": true,
+        "infinite": false,
+        "number": 1779954835
+      },
+      "tls_cert_last_renewal": {
+        "set": true,
+        "infinite": false,
+        "number": 0
+      },
+      "cert_flags": [],
+      "cluster_name": "",
+      "cores": 32,
+      "specialized_cores": 0,
+      "cpu_binding": 0,
+      "cpu_load": 66,
+      "free_mem": {
+        "set": true,
+        "infinite": false,
+        "number": 937
+      },
+      "cpus": 64,
+      "effective_cpus": 64,
+      "specialized_cpus": "",
+      "energy": {
+        "average_watts": 0,
+        "base_consumed_energy": 0,
+        "consumed_energy": 0,
+        "current_watts": {
+          "set": true,
+          "infinite": false,
+          "number": 0
+        },
+        "previous_consumed_energy": 0,
+        "last_collected": 0
+      },
+      "external_sensors": {},
+      "extra": "",
+      "power": {},
+      "features": [],
+      "active_features": [],
+      "gpu_spec": "",
+      "gres": "",
+      "gres_drained": "N/A",
+      "gres_used": "",
+      "instance_id": "",
+      "instance_type": "",
+      "last_busy": {
+        "set": true,
+        "infinite": false,
+        "number": 1780304336
+      },
+      "mcs_label": "",
+      "specialized_memory": 0,
+      "name": "cn4",
+      "next_state_after_reboot": [
+        "INVALID"
+      ],
+      "address": "cn4",
+      "hostname": "cn4",
+      "state": [
+        "IDLE"
+      ],
+      "operating_system": "Linux 6.12.74+deb13+1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.74-2 (2026-03-08)",
+      "owner": "",
+      "partitions": [
+        "normal"
+      ],
+      "port": 6818,
+      "real_memory": 131072,
+      "res_cores_per_gpu": 0,
+      "comment": "",
+      "reason": "",
+      "reason_changed_at": {
+        "set": true,
+        "infinite": false,
+        "number": 0
+      },
+      "reason_set_by_user": "",
+      "resume_after": {
+        "set": true,
+        "infinite": false,
+        "number": 0
+      },
+      "reservation": "",
+      "alloc_memory": 0,
+      "alloc_cpus": 0,
+      "alloc_idle_cpus": 64,
+      "tres_used": "",
+      "tres_weighted": 0.0,
+      "slurmd_start_time": {
+        "set": true,
+        "infinite": false,
+        "number": 1779965264
+      },
+      "sockets": 2,
+      "threads": 1,
+      "temporary_disk": 0,
+      "weight": 1,
+      "topology": "",
+      "tres": "cpu=64,mem=128G,billing=64",
+      "version": "25.05.4"
+    },
+    {
+      "architecture": "x86_64",
+      "burstbuffer_network_address": "",
+      "boards": 1,
+      "boot_time": {
+        "set": true,
+        "infinite": false,
+        "number": 1779954835
       },
       "tls_cert_last_renewal": {
         "set": true,
@@ -448,11 +448,11 @@
       "cores": 16,
       "specialized_cores": 0,
       "cpu_binding": 0,
-      "cpu_load": 89,
+      "cpu_load": 101,
       "free_mem": {
         "set": true,
         "infinite": false,
-        "number": 492
+        "number": 740
       },
       "cpus": 32,
       "effective_cpus": 32,
@@ -483,7 +483,7 @@
       "last_busy": {
         "set": true,
         "infinite": false,
-        "number": 1763370757
+        "number": 1780304334
       },
       "mcs_label": "",
       "specialized_memory": 0,
@@ -494,10 +494,9 @@
       "address": "gpu1",
       "hostname": "gpu1",
       "state": [
-        "IDLE",
-        "COMPLETING"
+        "IDLE"
       ],
-      "operating_system": "Linux 6.12.43+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.43-1 (2025-08-27)",
+      "operating_system": "Linux 6.12.74+deb13+1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.74-2 (2026-03-08)",
       "owner": "",
       "partitions": [
         "gpu"
@@ -527,14 +526,14 @@
       "slurmd_start_time": {
         "set": true,
         "infinite": false,
-        "number": 1763117550
+        "number": 1779965264
       },
       "sockets": 2,
       "threads": 1,
       "temporary_disk": 0,
       "weight": 1,
       "topology": "",
-      "tres": "cpu=32,mem=512G,billing=32",
+      "tres": "cpu=32,mem=512G,billing=32,gres/gpu=4,gres/gpu:h100=4",
       "version": "25.05.4"
     },
     {
@@ -544,7 +543,7 @@
       "boot_time": {
         "set": true,
         "infinite": false,
-        "number": 1758266697
+        "number": 1779954835
       },
       "tls_cert_last_renewal": {
         "set": true,
@@ -556,11 +555,11 @@
       "cores": 16,
       "specialized_cores": 0,
       "cpu_binding": 0,
-      "cpu_load": 89,
+      "cpu_load": 101,
       "free_mem": {
         "set": true,
         "infinite": false,
-        "number": 492
+        "number": 737
       },
       "cpus": 32,
       "effective_cpus": 32,
@@ -591,7 +590,7 @@
       "last_busy": {
         "set": true,
         "infinite": false,
-        "number": 1763129981
+        "number": 1780304311
       },
       "mcs_label": "",
       "specialized_memory": 0,
@@ -604,7 +603,7 @@
       "state": [
         "IDLE"
       ],
-      "operating_system": "Linux 6.12.43+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.43-1 (2025-08-27)",
+      "operating_system": "Linux 6.12.74+deb13+1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.74-2 (2026-03-08)",
       "owner": "",
       "partitions": [
         "gpu"
@@ -634,21 +633,21 @@
       "slurmd_start_time": {
         "set": true,
         "infinite": false,
-        "number": 1763117552
+        "number": 1779965265
       },
       "sockets": 2,
       "threads": 1,
       "temporary_disk": 0,
       "weight": 1,
       "topology": "",
-      "tres": "cpu=32,mem=512G,billing=32",
+      "tres": "cpu=32,mem=512G,billing=32,gres/gpu=4,gres/gpu:h100=4",
       "version": "25.05.4"
     }
   ],
   "last_update": {
     "set": true,
     "infinite": false,
-    "number": 1763370758
+    "number": 1780305455
   },
   "meta": {
     "plugin": {
@@ -658,7 +657,7 @@
       "accounting_storage": "accounting_storage/slurmdbd"
     },
     "client": {
-      "source": "admin:6820(fd:47)",
+      "source": "admin:6820(fd:9)",
       "user": "root",
       "group": "root"
     },

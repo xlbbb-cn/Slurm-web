@@ -12,8 +12,6 @@ import type { Component } from 'vue'
 import { useRoute } from 'vue-router'
 import ClusterMainLayout from '@/components/ClusterMainLayout.vue'
 import { useClusterDataPoller } from '@/composables/DataPoller'
-import { jobRequestedGPU, jobAllocatedGPU } from '@/composables/GatewayAPI'
-import type { ClusterIndividualJob } from '@/composables/GatewayAPI'
 import JobStatusBadge from '@/components/job/JobStatusBadge.vue'
 import JobProgress from '@/components/job/JobProgress.vue'
 import JobBackButton from '@/components/job/JobBackButton.vue'
@@ -24,6 +22,8 @@ import JobFieldRaw from '@/components/job/JobFieldRaw.vue'
 import JobFieldComment from '@/components/job/JobFieldComment.vue'
 import JobFieldExitCode from '@/components/job/JobFieldExitCode.vue'
 import JobResources from '@/components/job/JobResources.vue'
+import type { SlurmJobDetail } from '@/composables/gateway/slurm/types'
+import { jobAllocatedGPU, jobRequestedGPU } from '@/composables/gateway/slurm/job'
 
 const { cluster, id } = defineProps<{ cluster: string; id: number }>()
 
@@ -53,7 +53,7 @@ function isValidJobField(key: string): key is JobField {
   return typeof key === 'string' && JobsFields.includes(key as JobField)
 }
 
-const { data, unable, loaded, setCluster } = useClusterDataPoller<ClusterIndividualJob>(
+const { data, unable, loaded, setCluster } = useClusterDataPoller<SlurmJobDetail>(
   cluster,
   'job',
   5000,
@@ -83,13 +83,24 @@ const jobFieldsContent = computed(
   (): { id: JobField; label: string; component: Component; props: object }[] => {
     if (!data.value) return []
     return [
-      { id: 'user', label: 'User', component: JobFieldRaw, props: { field: data.value.user } },
+      {
+        id: 'user',
+        label: 'User',
+        component: JobFieldRaw,
+        props: {
+          field: data.value.user,
+          to: { name: 'user', params: { cluster, user: data.value.user } }
+        }
+      },
       { id: 'group', label: 'Group', component: JobFieldRaw, props: { field: data.value.group } },
       {
         id: 'account',
         label: 'Account',
         component: JobFieldRaw,
-        props: { field: data.value.association.account }
+        props: {
+          field: data.value.association.account,
+          to: { name: 'account', params: { cluster, account: data.value.association.account } }
+        }
       },
       {
         id: 'wckeys',
@@ -146,7 +157,10 @@ const jobFieldsContent = computed(
         id: 'tres-requested',
         label: 'Requested',
         component: JobResources,
-        props: { tres: data.value.tres.requested, gpu: jobRequestedGPU(data.value) }
+        props: {
+          tres: data.value.tres.requested,
+          gpu: jobRequestedGPU(data.value)
+        }
       },
       {
         id: 'tres-allocated',
@@ -249,7 +263,19 @@ onMounted(() => {
                     </span>
                   </a>
                 </dt>
-                <component :is="field.component" v-bind="field.props" />
+                <!--
+                  If the account is empty, do not render the component. This is actually a
+                  workaround for this Slurm bug:
+
+                  https://support.schedmd.com/show_bug.cgi?id=24215
+
+                   With Slurm REST API v0.0.43 and v0.0.44, this field is always empty.
+                -->
+                <component
+                  v-if="!(field.id === 'account' && data.association.account === '')"
+                  :is="field.component"
+                  v-bind="field.props"
+                />
               </div>
             </dl>
           </div>

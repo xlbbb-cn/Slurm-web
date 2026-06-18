@@ -1,16 +1,15 @@
 name: slurm-web
 title: Slurm-web
-version: v6
-prerelease: -dev
+version: v7
 start_page: overview:start.adoc
 asciidoc:
   attributes:
     source-language: asciidoc@
     table-caption: false
-    version: 6.0.0
+    version: 7.0.0
     api_version: 0.0.41
-    api_version_latest: 0.0.44
-    pkgs-derivative: slurmweb-6
+    api_version_latest: 0.0.45
+    pkgs-derivative: slurmweb-7
 nav:
 - modules/overview/nav.adoc
 - modules/install/nav.adoc

@@ -10,14 +10,24 @@ from pathlib import Path
 from ..version import get_version
 from . import SlurmwebExecBase
 from ..apps import SlurmwebAppSeed
-from ..apps.connect import SlurmwebAppConnectCheck
-from ..apps.agent import SlurmwebAppAgent
+from ..apps._defaults import SlurmwebAppDefaults
 
 
 class SlurmwebExecConnectCheck(SlurmwebExecBase):
+    """CLI entrypoint for the slurmrestd connection check utility."""
+
     @staticmethod
-    def seed(args=None):
-        parser = argparse.ArgumentParser(description=SlurmwebAppConnectCheck.NAME)
+    def register_subcommand(
+        subparsers: argparse._SubParsersAction,
+    ) -> argparse.ArgumentParser:
+        """
+        Declare the 'connect-check' subcommand arguments on the provided subparsers.
+        """
+        parser = subparsers.add_parser(
+            "connect-check",
+            help="Check connection from Slurm-web agent to slurmrestd",
+            description="slurm-web connect-check",
+        )
         parser.add_argument(
             "-v",
             "--version",
@@ -54,18 +64,21 @@ class SlurmwebExecConnectCheck(SlurmwebExecBase):
             help=(
                 "Path to configuration settings definition file (default: %(default)s)"
             ),
-            default=SlurmwebAppAgent.SETTINGS_DEFINITION,
+            default=SlurmwebAppDefaults.AGENT.settings_definition,
             type=Path,
         )
         parser.add_argument(
             "--conf",
             help="Path to configuration file (default: %(default)s)",
-            default=SlurmwebAppAgent.SITE_CONFIGURATION,
+            default=SlurmwebAppDefaults.AGENT.site_configuration,
             type=Path,
         )
 
-        return parser.parse_args(args=args, namespace=SlurmwebAppSeed())
+        parser.set_defaults(app=SlurmwebExecConnectCheck.app)
+        return parser
 
     @staticmethod
-    def app(args=None):
-        return SlurmwebAppConnectCheck(SlurmwebExecConnectCheck.seed(args=args))
+    def app(seed: SlurmwebAppSeed):
+        from ..apps.connect import SlurmwebAppConnectCheck
+
+        return SlurmwebAppConnectCheck(seed)

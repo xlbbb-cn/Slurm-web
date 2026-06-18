@@ -175,6 +175,10 @@
     "content-type": "application/json",
     "status": 200
   },
+  "slurmdb-associations": {
+    "content-type": "application/json",
+    "status": 200
+  },
   "slurmdb-job-archived": {
     "content-type": "application/json",
     "status": 200
@@ -244,6 +248,10 @@
     "status": 200
   },
   "slurmdb-job-unfound": {
+    "content-type": "application/json",
+    "status": 200
+  },
+  "slurmdb-jobs": {
     "content-type": "application/json",
     "status": 200
   },

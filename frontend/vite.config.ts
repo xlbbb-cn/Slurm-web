@@ -40,11 +40,33 @@ export default defineConfig(({ mode }) => {
       target: 'esnext',  // required for top-level await used by runtimeConfiguration plugin
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ['chart.js', 'luxon'],
-          }
+          manualChunks(id) {
+            if (
+              id.includes('node_modules/chart.js') ||
+              id.includes('node_modules/chartjs-adapter-luxon') ||
+              id.includes('node_modules/luxon')
+            ) {
+              return 'vendor'
+            }
+          },
         }
       }
-    }
+    },
+    server: mode === 'development' ? {
+      proxy: {
+        '/config.json': {
+          target: 'http://localhost:5012',
+          changeOrigin: true,
+        },
+        '/logo': {
+          target: 'http://localhost:5012',
+          changeOrigin: true,
+        },
+        '/favicon.ico': {
+          target: 'http://localhost:5012',
+          changeOrigin: true,
+        },
+      },
+    } : undefined,
   }
 })

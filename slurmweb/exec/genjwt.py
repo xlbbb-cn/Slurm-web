@@ -10,14 +10,22 @@ from pathlib import Path
 from ..version import get_version
 from . import SlurmwebExecBase
 from ..apps import SlurmwebAppSeed
-from ..apps.genjwt import SlurmwebAppGenJWT
-from ..apps.gateway import SlurmwebAppGateway
+from ..apps._defaults import SlurmwebAppDefaults
 
 
 class SlurmwebExecGenJWT(SlurmwebExecBase):
+    """CLI entrypoint for the JWT key generation utility."""
+
     @staticmethod
-    def seed(args=None):
-        parser = argparse.ArgumentParser(description=SlurmwebAppGenJWT.NAME)
+    def register_subcommand(
+        subparsers: argparse._SubParsersAction,
+    ) -> argparse.ArgumentParser:
+        """Declare the 'gen-jwt-key' subcommand arguments on the provided subparsers."""
+        parser = subparsers.add_parser(
+            "gen-jwt-key",
+            help="Generate secret JWT signing key for Slurm-web",
+            description="slurm-web gen-jwt-key",
+        )
         parser.add_argument(
             "-v",
             "--version",
@@ -54,13 +62,13 @@ class SlurmwebExecGenJWT(SlurmwebExecBase):
             help=(
                 "Path to configuration settings definition file (default: %(default)s)"
             ),
-            default=SlurmwebAppGateway.SETTINGS_DEFINITION,
+            default=SlurmwebAppDefaults.GATEWAY.settings_definition,
             type=Path,
         )
         parser.add_argument(
             "--conf",
             help="Path to configuration file (default: %(default)s)",
-            default=SlurmwebAppGateway.SITE_CONFIGURATION,
+            default=SlurmwebAppDefaults.GATEWAY.site_configuration,
             type=Path,
         )
         parser.add_argument(
@@ -69,9 +77,18 @@ class SlurmwebExecGenJWT(SlurmwebExecBase):
             action="store_true",
             help="Also give read permission on JWT key to slurm user",
         )
+        parser.add_argument(
+            "--set-ownership",
+            dest="set_ownership",
+            action="store_true",
+            help="Require root and assign generated key file to slurm-web user",
+        )
 
-        return parser.parse_args(args=args, namespace=SlurmwebAppSeed())
+        parser.set_defaults(app=SlurmwebExecGenJWT.app)
+        return parser
 
     @staticmethod
-    def app(args=None):
-        return SlurmwebAppGenJWT(SlurmwebExecGenJWT.seed(args=args))
+    def app(seed: SlurmwebAppSeed):
+        from ..apps.genjwt import SlurmwebAppGenJWT
+
+        return SlurmwebAppGenJWT(seed)

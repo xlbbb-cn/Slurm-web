@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -63,14 +63,34 @@ jobs:
           repo: powertools
           rackslab-repo: el8
           racksdb-pkg: python3-racksdb-web
+          rfl-auth-pkgs: >-
+            python3-rfl-authentication-jwt
+            python3-rfl-authentication-ldap
         - container: rockylinux/rockylinux:9
           epel: 9
           rackslab-repo: el9
           repo: crb
           racksdb-pkg: python3-racksdb+web
-        - container: fedora:42
-          rackslab-repo: fc42
+          rfl-auth-pkgs: >-
+            python3-rfl-authentication+jwt
+            python3-rfl-authentication+ldap
+            python3-rfl-authentication+oidc
+        - container: rockylinux/rockylinux:10
+          epel: 10
+          rackslab-repo: el10
+          repo: crb
           racksdb-pkg: python3-racksdb+web
+          rfl-auth-pkgs: >-
+            python3-rfl-authentication+jwt
+            python3-rfl-authentication+ldap
+            python3-rfl-authentication+oidc
+        - container: fedora:44
+          rackslab-repo: fc44
+          racksdb-pkg: python3-racksdb+web
+          rfl-auth-pkgs: >-
+            python3-rfl-authentication+jwt
+            python3-rfl-authentication+ldap
+            python3-rfl-authentication+oidc
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.envs.container }}
@@ -103,7 +123,6 @@ jobs:
             python3-flask \
             python3-importlib-metadata \
             python3-markdown \
-            python3-parameterized \
             python3-pip \
             python3-prometheus_client \
             python3-pytest \
@@ -112,6 +131,7 @@ jobs:
             python3-redis \
             python3-requests \
             python3-rfl-authentication \
+            ${{ matrix.envs.rfl-auth-pkgs }} \
             python3-rfl-build \
             python3-rfl-core \
             python3-rfl-log \
@@ -146,16 +166,14 @@ jobs:
       fail-fast: false
       matrix:
         envs:
-        - container: debian:oldstable
-          rackslab-repo: bookworm
         - container: debian:stable
           rackslab-repo: trixie
         - container: debian:testing
           rackslab-repo: forky
         - container: debian:unstable
           rackslab-repo: sid
-        - container: ubuntu:noble
-          rackslab-repo: ubuntu24.04
+        - container: ubuntu:resolute
+          rackslab-repo: ubuntu26.04
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.envs.container }}
@@ -184,7 +202,6 @@ jobs:
             python3-clustershell \
             python3-flask \
             python3-markdown \
-            python3-parameterized \
             python3-pip \
             python3-prometheus-client \
             python3-pytest \
@@ -193,6 +210,9 @@ jobs:
             python3-redis \
             python3-requests \
             python3-rfl-authentication \
+            python3-rfl-authentication-jwt \
+            python3-rfl-authentication-ldap \
+            python3-rfl-authentication-oidc \
             python3-rfl-build \
             python3-rfl-core \
             python3-rfl-log \

@@ -7,12 +7,16 @@
 -->
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRuntimeStore } from '@/stores/runtime'
+import { jobStateFilters } from '@/stores/runtime/jobs'
 import { useRuntimeConfiguration } from '@/plugins/runtimeConfiguration'
 import PartitionFilterSelector from '@/components/filters/PartitionFilterSelector.vue'
 import UserFilterSelector from '@/components/jobs/UserFilterSelector.vue'
 import AccountFilterSelector from '@/components/jobs/AccountFilterSelector.vue'
 import QosFilterSelector from '@/components/jobs/QosFilterSelector.vue'
+import JobNameFilterInput from '@/components/jobs/JobNameFilterInput.vue'
+import JobsPastTimeRangeSelector from '@/components/jobs/JobsPastTimeRangeSelector.vue'
 
 import {
   Dialog,
@@ -26,24 +30,57 @@ import {
 import {
   ChevronDownIcon,
   BoltIcon,
+  ClockIcon,
   RectangleGroupIcon,
   UserIcon,
   UsersIcon,
-  SwatchIcon
+  SwatchIcon,
+  TagIcon
 } from '@heroicons/vue/20/solid'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 
-const { cluster, nbJobs } = defineProps<{ cluster: string; nbJobs: number }>()
+const {
+  cluster,
+  nbJobs,
+  pastTimeRange = false,
+  maxPastHours,
+  defaultPastHours
+} = defineProps<{
+  cluster: string
+  nbJobs: number
+  pastTimeRange?: boolean
+  maxPastHours?: number
+  defaultPastHours?: number
+}>()
+
+const emit = defineEmits<{
+  pastHoursChange: [hours: number]
+}>()
 
 const runtimeStore = useRuntimeStore()
 const runtimeConfiguration = useRuntimeConfiguration()
 
-const state_filters = [
-  { value: 'completed', label: 'Completed' },
-  { value: 'failed', label: 'Failed' },
-  { value: 'running', label: 'Running' },
-  { value: 'pending', label: 'Pending' }
-]
+const state_filters = computed(() => jobStateFilters(pastTimeRange))
+
+const showUserFilter = computed(
+  () =>
+    runtimeConfiguration.authentication &&
+    (pastTimeRange
+      ? runtimeStore.hasPermission('jobs-view-past')
+      : runtimeStore.hasPermission('jobs-view'))
+)
+
+const stateFiltersModel = computed({
+  get: () =>
+    pastTimeRange ? runtimeStore.jobs.filters.pastStates : runtimeStore.jobs.filters.activeStates,
+  set: (value: string[]) => {
+    if (pastTimeRange) {
+      runtimeStore.jobs.filters.pastStates = value
+    } else {
+      runtimeStore.jobs.filters.activeStates = value
+    }
+  }
+})
 </script>
 
 <template>
@@ -80,7 +117,7 @@ const state_filters = [
               <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 Filters
                 <span
-                  class="text-slurmweb dark:text-slurmweb-light dark:bg-slurmweb-verydark ml-3 hidden rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium md:inline-block"
+                  class="text-slurmweb dark:text-slurmweb-light dark:bg-slurmweb-verydark bg-slurmweb-light ml-3 hidden rounded-full px-2.5 py-0.5 text-xs font-medium md:inline-block"
                   >{{ nbJobs }}</span
                 >
               </h2>
@@ -96,6 +133,40 @@ const state_filters = [
 
             <!-- Filters -->
             <form class="mt-4">
+              <Disclosure
+                v-if="pastTimeRange && maxPastHours != null"
+                as="div"
+                class="border-t border-gray-200 px-4 py-6 dark:border-gray-600"
+                v-slot="{ open }"
+              >
+                <h3 class="-mx-2 -my-3 flow-root">
+                  <DisclosureButton
+                    id="disclosure-time-range-btn"
+                    class="flex w-full items-center justify-between px-2 py-3 text-sm text-gray-400"
+                  >
+                    <span class="flex">
+                      <ClockIcon
+                        class="-mt-1 mr-2 -ml-1 h-8 w-8 rounded-full bg-lime-600 p-2 text-white"
+                      />
+                      <span class="font-medium text-gray-900 dark:text-gray-100">Time range</span>
+                    </span>
+                    <span class="ml-6 flex items-center">
+                      <ChevronDownIcon
+                        :class="[open ? '-rotate-180' : 'rotate-0', 'h-5 w-5 transform']"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </DisclosureButton>
+                </h3>
+                <DisclosurePanel class="pt-6">
+                  <JobsPastTimeRangeSelector
+                    v-if="defaultPastHours != null"
+                    :max-hours="maxPastHours"
+                    :default-hours="defaultPastHours"
+                    @select="emit('pastHoursChange', $event)"
+                  />
+                </DisclosurePanel>
+              </Disclosure>
               <Disclosure
                 as="div"
                 class="border-t border-gray-200 px-4 py-6 dark:border-gray-600"
@@ -132,7 +203,7 @@ const state_filters = [
                         :name="`state-${state.value}[]`"
                         :value="state.value"
                         type="checkbox"
-                        v-model="runtimeStore.jobs.filters.states"
+                        v-model="stateFiltersModel"
                         class="text-slurmweb focus:ring-slurmweb h-4 w-4 rounded-sm border-gray-300"
                       />
                       <label
@@ -144,13 +215,41 @@ const state_filters = [
                   </div>
                 </DisclosurePanel>
               </Disclosure>
+              <Disclosure
+                as="div"
+                class="border-t border-t-gray-200 px-4 py-6 dark:border-t-gray-600"
+                v-slot="{ open }"
+              >
+                <h3 class="-mx-2 -my-3 flow-root">
+                  <DisclosureButton
+                    id="disclosure-name-btn"
+                    class="flex w-full items-center justify-between px-2 py-3 text-sm text-gray-400"
+                  >
+                    <span class="flex">
+                      <TagIcon
+                        class="-mt-1 mr-2 -ml-1 h-8 w-8 rounded-full bg-sky-600 p-2 text-white"
+                      />
+                      <span class="font-medium text-gray-900 dark:text-gray-100">Name</span>
+                    </span>
+                    <span class="ml-6 flex items-center">
+                      <ChevronDownIcon
+                        :class="[open ? '-rotate-180' : 'rotate-0', 'h-5 w-5 transform']"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </DisclosureButton>
+                </h3>
+                <DisclosurePanel class="pt-6">
+                  <JobNameFilterInput />
+                </DisclosurePanel>
+              </Disclosure>
               <!--
                 Hide users filters disclosure panel when authentication is disabled. The list of
                 users are retrieved from authentication backend. When authentication is disabled,
                 the list of users cannot be retrieved.
               -->
               <Disclosure
-                v-if="runtimeConfiguration.authentication"
+                v-if="showUserFilter"
                 as="div"
                 class="border-t border-t-gray-200 px-4 py-6 dark:border-t-gray-600"
                 v-slot="{ open }"
@@ -178,7 +277,7 @@ const state_filters = [
                 </DisclosurePanel>
               </Disclosure>
               <Disclosure
-                v-if="runtimeStore.hasPermission('view-accounts')"
+                v-if="runtimeStore.hasPermission('accounts-view')"
                 as="div"
                 class="border-t border-t-gray-200 px-4 py-6 dark:border-t-gray-600"
                 v-slot="{ open }"
@@ -207,7 +306,7 @@ const state_filters = [
                 </DisclosurePanel>
               </Disclosure>
               <Disclosure
-                v-if="runtimeStore.hasPermission('view-qos')"
+                v-if="runtimeStore.hasPermission('qos-view')"
                 as="div"
                 class="border-t border-t-gray-200 px-4 py-6 dark:border-t-gray-600"
                 v-slot="{ open }"
@@ -236,7 +335,7 @@ const state_filters = [
                 </DisclosurePanel>
               </Disclosure>
               <Disclosure
-                v-if="runtimeStore.hasPermission('view-partitions')"
+                v-if="runtimeStore.hasPermission('partitions-view')"
                 as="div"
                 class="border-t border-t-gray-200 px-4 py-6 dark:border-t-gray-600"
                 v-slot="{ open }"

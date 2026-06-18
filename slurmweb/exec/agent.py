@@ -10,13 +10,22 @@ from pathlib import Path
 from ..version import get_version
 from . import SlurmwebExecBase
 from ..apps import SlurmwebAppSeed
-from ..apps.agent import SlurmwebAppAgent
+from ..apps._defaults import SlurmwebAppDefaults
 
 
 class SlurmwebExecAgent(SlurmwebExecBase):
+    """CLI entrypoint for the Slurm-web agent component."""
+
     @staticmethod
-    def seed(args=None):
-        parser = argparse.ArgumentParser(description=SlurmwebAppAgent.NAME)
+    def register_subcommand(
+        subparsers: argparse._SubParsersAction,
+    ) -> argparse.ArgumentParser:
+        """Declare the 'agent' subcommand arguments on the provided subparsers."""
+        parser = subparsers.add_parser(
+            "agent",
+            help="Start Slurm-web agent component",
+            description="slurm-web agent",
+        )
         parser.add_argument(
             "-v",
             "--version",
@@ -53,17 +62,20 @@ class SlurmwebExecAgent(SlurmwebExecBase):
             help=(
                 "Path to configuration settings definition file (default: %(default)s)"
             ),
-            default=SlurmwebAppAgent.SETTINGS_DEFINITION,
+            default=SlurmwebAppDefaults.AGENT.settings_definition,
             type=Path,
         )
         parser.add_argument(
             "--conf",
             help="Path to configuration file (default: %(default)s)",
-            default=SlurmwebAppAgent.SITE_CONFIGURATION,
+            default=SlurmwebAppDefaults.AGENT.site_configuration,
             type=Path,
         )
-        return parser.parse_args(args=args, namespace=SlurmwebAppSeed())
+        parser.set_defaults(app=SlurmwebExecAgent.app)
+        return parser
 
     @staticmethod
-    def app(args=None):
-        return SlurmwebAppAgent(SlurmwebExecAgent.seed(args=args))
+    def app(seed: SlurmwebAppSeed):
+        from ..apps.agent import SlurmwebAppAgent
+
+        return SlurmwebAppAgent(seed)

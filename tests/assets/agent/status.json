@@ -3,6 +3,10 @@
     "content-type": "application/json",
     "status": 200
   },
+  "associations": {
+    "content-type": "application/json",
+    "status": 200
+  },
   "cache-reset": {
     "content-type": "application/json",
     "status": 200
@@ -20,6 +24,10 @@
     "status": 200
   },
   "jobs-node": {
+    "content-type": "application/json",
+    "status": 200
+  },
+  "jobs-past": {
     "content-type": "application/json",
     "status": 200
   },

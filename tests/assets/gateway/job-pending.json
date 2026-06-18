@@ -1,13 +1,13 @@
 {
   "accrue_time": {
     "infinite": false,
-    "number": 1763129126,
+    "number": 1780140255,
     "set": true
   },
   "association": {
     "account": "",
     "cluster": "hpc",
-    "id": 17,
+    "id": 10,
     "partition": "",
     "user": ""
   },
@@ -23,7 +23,7 @@
     "number": 128,
     "set": true
   },
-  "current_working_directory": "/home/rcarson",
+  "current_working_directory": "/home/rpowers",
   "derived_exit_code": {
     "return_code": {
       "infinite": false,
@@ -61,23 +61,23 @@
     ]
   },
   "gres_detail": [],
-  "group": "scientists",
+  "group": "slurm",
   "last_sched_evaluation": {
     "infinite": false,
-    "number": 1763129190,
+    "number": 1780140316,
     "set": true
   },
-  "name": "wrap",
+  "name": "allocation",
   "node_count": {
     "infinite": false,
-    "number": 2,
+    "number": 4,
     "set": true
   },
   "nodes": "None assigned",
-  "partition": "normal",
+  "partition": "gpu",
   "priority": {
     "infinite": false,
-    "number": 909,
+    "number": 636,
     "set": true
   },
   "qos": "normal",
@@ -95,10 +95,10 @@
     "reason": "None"
   },
   "stderr_expanded": "",
-  "stdin_expanded": "/dev/null",
-  "stdout_expanded": "/home/rcarson/slurm-42.out",
+  "stdin_expanded": "",
+  "stdout_expanded": "/home/rpowers/slurm-5528.out",
   "steps": [],
-  "submit_line": "sbatch --time 2 --wrap sleep 90 && true --ntasks 128",
+  "submit_line": "",
   "tasks": {
     "infinite": false,
     "number": 128,
@@ -106,7 +106,7 @@
   },
   "time": {
     "elapsed": 0,
-    "eligible": 1763129126,
+    "eligible": 1780140255,
     "end": 0,
     "limit": {
       "infinite": false,
@@ -115,11 +115,11 @@
     },
     "planned": {
       "infinite": false,
-      "number": 80,
+      "number": 70,
       "set": true
     },
     "start": 0,
-    "submission": 1763129126,
+    "submission": 1780140255,
     "suspended": 0,
     "system": {
       "microseconds": 0,
@@ -160,19 +160,24 @@
         "id": 5,
         "name": "",
         "type": "billing"
+      },
+      {
+        "count": 2,
+        "id": 1001,
+        "name": "gpu",
+        "type": "gres"
       }
     ]
   },
-  "tres_per_job": "",
+  "tres_per_job": "gres/gpu:2",
   "tres_per_node": "",
   "tres_per_socket": "",
   "tres_per_task": "",
-  "tres_req_str": "cpu=128,mem=64G,node=1,billing=128",
-  "used_gres": "",
-  "user": "rcarson",
+  "tres_req_str": "cpu=128,mem=64G,node=1,billing=128,gres/gpu=2",
+  "user": "rpowers",
   "wckey": {
     "flags": [],
     "wckey": ""
   },
-  "working_directory": "/home/rcarson"
+  "working_directory": "/home/rpowers"
 }

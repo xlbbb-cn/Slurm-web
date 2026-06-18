@@ -45,8 +45,22 @@ service:
     doc: |
       List of debug flags to enable. Special value `ALL` enables all debug
       flags.
+  session_key:
+    type: path
+    default: /var/lib/slurm-web/session.key
+    doc: |
+      Path to file with the secret key used to protect server-side sessions
+      during authentication.
+    ex: /var/lib/slurm-web/session.key
 
 ui:
+  _doc: |
+    This section configures the user interface served by the gateway: public URL,
+    static assets, login messages, RacksDB display options, and optional custom
+    branding (colors, logos, favicon).
+
+    For branding file layout, color usage, logo variants, and examples, see
+    xref:conf:branding.adoc[Custom Branding].
   host:
     type: uri
     doc: |
@@ -100,6 +114,99 @@ ui:
     default: false
     doc: |
       Enable racks labels in RacksDB infrastructure graphical representations.
+  color_light:
+    type: str
+    doc: |
+      Custom light brand color for the frontend interface, as a hexadecimal
+      color (e.g. `#ccdbe6`). Used for light page backgrounds, subtle
+      highlights, and tags. When not defined, the default Slurm-web color is
+      used.
+    ex: "#ccdbe6"
+  color_main:
+    type: str
+    doc: |
+      Custom main brand color for the frontend interface, as a hexadecimal color
+      (e.g. `#759ab8`). Used for the sidebar background, primary buttons, links,
+      focus rings, and selected controls (dashboard tabs, filters, resource
+      diagram highlights). When not defined, the default Slurm-web color is used.
+    ex: "#759ab8"
+  color_darker:
+    type: str
+    doc: |
+      Custom darker brand color for the frontend interface, as a hexadecimal
+      color (e.g. `#6185a3`). Used for button hover states and focus outlines.
+      When not defined, the default Slurm-web color is used.
+    ex: "#6185a3"
+  color_dark:
+    type: str
+    doc: |
+      Custom dark brand color for the frontend interface, as a hexadecimal color
+      (e.g. `#486a86`). Used for active sidebar entries, secondary text, and
+      dark-mode button backgrounds. When not defined, the default Slurm-web color
+      is used.
+    ex: "#486a86"
+  color_verydark:
+    type: str
+    doc: |
+      Custom very dark brand color for the frontend interface, as a hexadecimal
+      color (e.g. `#3b5163`). Used for active navigation in dark mode and
+      primary actions on dark backgrounds. When not defined, the default
+      Slurm-web color is used.
+    ex: "#3b5163"
+  color_font_disabled:
+    type: str
+    doc: |
+      Custom disabled font color for the frontend interface, as a hexadecimal
+      color (e.g. `#dbe9f4`). Used for inactive sidebar menu labels and icons on
+      the main brand background. When not defined, the default Slurm-web color is
+      used.
+    ex: "#dbe9f4"
+  logo_login:
+    type: path
+    doc: |
+      Path to a custom logo image displayed on the login page in light mode.
+      Use a PNG file; a square or portrait layout around 140×160 pixels matches
+      the default Slurm-web logo. When not defined, the default Slurm-web logo is
+      used.
+    ex: /etc/slurm-web/branding/logo.png
+  logo_login_dark:
+    type: path
+    doc: |
+      Path to a custom logo image displayed on the login page in dark mode. Use a
+      PNG file with the same recommended size as logo_login (around 140×160
+      pixels). When not defined, the default Slurm-web logo is used.
+    ex: /etc/slurm-web/branding/logo_dark.png
+  logo_horizontal:
+    type: path
+    doc: |
+      Path to a custom horizontal logo image displayed in the sidebar in light
+      mode. Use a PNG file; a wide layout around 280×64 pixels matches the
+      default Slurm-web logo. When not defined, the default Slurm-web logo is
+      used.
+    ex: /etc/slurm-web/branding/logo_horizontal.png
+  logo_horizontal_dark:
+    type: path
+    doc: |
+      Path to a custom horizontal logo image displayed in the sidebar in dark
+      mode. Use a PNG file with the same recommended size as logo_horizontal
+      (around 280×64 pixels). When not defined, the default Slurm-web logo is
+      used.
+    ex: /etc/slurm-web/branding/logo_horizontal_dark.png
+  logo_alt:
+    type: str
+    doc: |
+      Alternative text for custom logo images in the frontend interface. When
+      not defined, `Slurm-web` is used.
+    ex: My HPC Portal
+  favicon:
+    type: path
+    doc: |
+      Path to a custom favicon file. Only the ICO extension is supported. Use a
+      multi-resolution ICO (for example 16×16, 32×32, and 48×48 pixels) so icons
+      remain sharp in browser tabs and bookmarks. The file is copied to the
+      frontend application at runtime. When not defined, the default Slurm-web
+      favicon is used.
+    ex: /etc/slurm-web/branding/favicon.ico
 
 agents:
   url:
@@ -119,7 +226,7 @@ agents:
     ex: /path/to/certificate.pem
   version:
     type: str
-    default: 5.1.0
+    default: 7.0.0
     doc: |
       Minimal support version of Slurm-web agent API
 
@@ -129,7 +236,7 @@ agents:
       the default value only.
   racksdb_version:
     type: str
-    default: 0.5.0
+    default: 0.7.0
     doc: |
       Minimal supported version of RacksDB API
 
@@ -137,6 +244,7 @@ agents:
       you are doing. This parameter is more intented for Slurm-web developers
       rather than end users. Slurm-web is officially tested and validated with
       the default value only.
+
 authentication:
   enabled:
     type: bool
@@ -146,10 +254,103 @@ authentication:
     type: str
     choices:
     - ldap
+    - oidc
     default: ldap
     doc: Authentification method
 
+oidc:
+  _doc: |
+    Parameters in this section apply when `authentication` > `method` is set to
+    `oidc`. Slurm-web uses the OAuth 2.0 authorization code flow to authenticate
+    users against an OpenID Connect provider such as Keycloak or Authentik. Enable
+    PKCE with the optional `pkce` parameter (`S256` or `plain`).
+
+    Register the redirect URI `{ui.host}/api/oidc/callback` (including any path
+    prefix defined in `ui.host`) in the identity provider. Map user groups into
+    the ID token or userinfo endpoint under the configured `groups_claim` for RBAC
+    in the policy file.
+
+    For setup instructions, see xref:conf:auth/oidc.adoc[].
+  issuer:
+    type: uri
+    doc: OIDC issuer URL used for discovery
+    ex: https://idp.example.com/realms/org
+  client_id:
+    type: str
+    doc: OIDC client identifier
+  client_secret:
+    type: password
+    doc: |
+      OIDC client secret for confidential clients. Optional for public clients
+      (omit `client_secret` and `client_secret_file`; `pkce` must then be set).
+    ex: SECR3T
+  client_secret_file:
+    type: path
+    doc: |
+      As an alternative to `client_secret` parameter, path to a separate file to
+      read OIDC client secret from. When this parameter is defined, the
+      `client_secret` parameter is ignored. Optional for public clients.
+    ex: /etc/slurm-web/oidc_client_secret
+  redirect_uri:
+    type: uri
+    doc: |
+      OIDC redirect URI registered at the identity provider. When not defined,
+      it is automatically derived from `ui.host` with path `/api/oidc/callback`.
+  scope:
+    type: str
+    default: openid profile email
+    doc: OIDC authorization scopes
+  subject_claim:
+    type: str
+    default: sub
+    doc: Claim used as user login in Slurm-web
+  fullname_claim:
+    type: str
+    default: name
+    doc: Claim used as user full name in Slurm-web
+  groups_claim:
+    type: str
+    default: groups
+    doc: |
+      Claim used for user groups in Slurm-web RBAC. When empty, groups are not
+      retrieved from userinfo endpoint.
+  restricted_groups:
+    type: list
+    content: str
+    doc: |
+      List of user groups allowed to connect. When this parameter is not
+      defined, all authenticated OIDC users are authorized to sign in.
+    ex:
+    - admins
+    - biology
+  pkce:
+    type: str
+    choices:
+    - S256
+    - plain
+    doc: |
+      PKCE code challenge method for the authorization code flow. When not
+      defined, PKCE is disabled (typical for confidential clients). Use S256
+      (recommended). `plain` is supported for legacy identity providers only.
+      Required for public clients (no client secret).
+  verify_ssl:
+    type: bool
+    default: true
+    doc: Verify TLS certificate when connecting to OIDC provider
+  cacert:
+    type: path
+    doc: |
+      Path to CA certificate used to validate signature of OIDC provider
+      certificate. When not defined, the default system CA certificates is used.
+    ex: /path/to/certificate.pem
+
 ldap:
+  _doc: |
+    Parameters in this section apply when `authentication` > `method` is set to
+    `ldap` (the default). The gateway validates username and password against the
+    LDAP directory and retrieves group memberships at login.
+
+    For setup instructions, see xref:conf:auth/ldap.adoc[].
   uri:
     type: uri
     doc: URI to connect to LDAP server

@@ -34,10 +34,12 @@ Many features in a reactive & responsive web UI:
 * Colored badges to visualize job status at a glance
 * GPU resources utilization monitoring
 * Advanced visualization of node status with racking topology
-* Intuitive visualization of QOS and advanced reservations
+* Intuitive visualization of account tree, QOS and advanced reservations
 * Dark mode support
+* Custom UI branding (colors, logos, favicon)
 * Multi-clusters support
 * LDAP authentication (including Active Directory support)
+* SSO OpenID Connect (OIDC) authentication (ex: Keycloak, Authentik, etc)
 * Advanced RBAC permissions management
 * Transparent caching
 * Integration with Prometheus to collect and chart timeseries metrics of Slurm
@@ -57,9 +59,9 @@ Get more details in
 ## Quickstart
 
 To install and start using Slurm-web in a few steps, follow the
-[quickstart guide](https://docs.rackslab.io/slurm-web/install/quickstart.html)!
-Packages are available for most Linux distributions for easy installation and
-upgrade.
+[quickstart guide](https://docs.rackslab.io/slurm-web/install/quickstart/index.html)!
+Containers and system packages are available for most Linux distributions for
+easy installation and upgrade.
 
 ## Documentation
 

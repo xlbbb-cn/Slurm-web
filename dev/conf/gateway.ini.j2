@@ -1,6 +1,7 @@
 [service]
 cors=yes
 port={{ service_port }}
+session_key={{ session_key }}
 
 [ui]
 host=http://localhost:{{ service_port }}{{ gateway_prefix }}
@@ -11,6 +12,20 @@ enabled=no
 {%- endif %}
 templates=conf/vendor/templates
 message_login={{ message }}
+{%- if branding is defined and branding %}
+color_light={{ branding.colors.color_light }}
+color_main={{ branding.colors.color_main }}
+color_darker={{ branding.colors.color_darker }}
+color_dark={{ branding.colors.color_dark }}
+color_verydark={{ branding.colors.color_verydark }}
+color_font_disabled={{ branding.colors.color_font_disabled }}
+logo_login={{ branding_dir }}/logo_login.png
+logo_login_dark={{ branding_dir }}/logo_login_dark.png
+logo_horizontal={{ branding_dir }}/logo_horizontal.png
+logo_horizontal_dark={{ branding_dir }}/logo_horizontal_dark.png
+favicon={{ branding_dir }}/favicon.ico
+logo_alt={{ branding.logo_alt }}
+{%- endif %}
 
 [agents]
 url =
@@ -21,7 +36,20 @@ url =
 [jwt]
 key={{ jwt_key }}
 
-{%- if not anonymous %}
+{%- if oidc %}
+[authentication]
+enabled=yes
+method=oidc
+
+[oidc]
+issuer=http://localhost:{{ keycloak_port }}/realms/slurm
+client_id=slurm-web
+client_secret={{ oidc_client_secret }}
+pkce=S256
+subject_claim=preferred_username
+groups_claim=groups
+verify_ssl=no
+{%- elif not anonymous %}
 [authentication]
 enabled=yes
 

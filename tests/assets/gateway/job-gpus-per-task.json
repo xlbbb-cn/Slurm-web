@@ -1,13 +1,13 @@
 {
   "accrue_time": {
     "infinite": false,
-    "number": 1763129088,
+    "number": 1780140251,
     "set": true
   },
   "association": {
     "account": "",
     "cluster": "hpc",
-    "id": 15,
+    "id": 14,
     "partition": "",
     "user": ""
   },
@@ -23,7 +23,7 @@
     "number": 2,
     "set": true
   },
-  "current_working_directory": "/home/mcarrillo",
+  "current_working_directory": "/home/tkirby",
   "derived_exit_code": {
     "return_code": {
       "infinite": false,
@@ -63,13 +63,13 @@
   "gres_detail": [
     "gpu:h100:4(IDX:0-3)"
   ],
-  "group": "scientists",
+  "group": "slurm",
   "last_sched_evaluation": {
     "infinite": false,
-    "number": 1763129091,
+    "number": 1780140251,
     "set": true
   },
-  "name": "wrap",
+  "name": "allocation",
   "node_count": {
     "infinite": false,
     "number": 1,
@@ -79,7 +79,7 @@
   "partition": "gpu",
   "priority": {
     "infinite": false,
-    "number": 545,
+    "number": 272,
     "set": true
   },
   "qos": "normal",
@@ -97,8 +97,8 @@
     "reason": "None"
   },
   "stderr_expanded": "",
-  "stdin_expanded": "/dev/null",
-  "stdout_expanded": "/home/mcarrillo/slurm-28.out",
+  "stdin_expanded": "",
+  "stdout_expanded": "/home/tkirby/slurm-5519.out",
   "steps": [
     {
       "CPU": {
@@ -159,7 +159,7 @@
         }
       },
       "step": {
-        "id": "28.batch",
+        "id": "5519.batch",
         "name": "batch",
         "stderr": "",
         "stderr_expanded": "",
@@ -168,6 +168,7 @@
         "stdout": "",
         "stdout_expanded": ""
       },
+      "submit_line": "",
       "task": {
         "distribution": "Unknown"
       },
@@ -175,7 +176,7 @@
         "count": 1
       },
       "time": {
-        "elapsed": 0,
+        "elapsed": 1,
         "end": {
           "infinite": false,
           "number": 0,
@@ -188,7 +189,7 @@
         },
         "start": {
           "infinite": false,
-          "number": 1763129091,
+          "number": 1780140251,
           "set": true
         },
         "suspended": 0,
@@ -224,6 +225,18 @@
             "id": 4,
             "name": "",
             "type": "node"
+          },
+          {
+            "count": 4,
+            "id": 1001,
+            "name": "gpu",
+            "type": "gres"
+          },
+          {
+            "count": 4,
+            "id": 1002,
+            "name": "gpu:h100",
+            "type": "gres"
           }
         ],
         "consumed": {
@@ -241,15 +254,15 @@
       }
     }
   ],
-  "submit_line": "sbatch --time 1 --wrap sleep 30 && true --partition gpu --gpus-per-task 2 --ntasks 2",
+  "submit_line": "",
   "tasks": {
     "infinite": false,
     "number": 2,
     "set": true
   },
   "time": {
-    "elapsed": 0,
-    "eligible": 1763129088,
+    "elapsed": 1,
+    "eligible": 1780140251,
     "end": 0,
     "limit": {
       "infinite": false,
@@ -258,11 +271,11 @@
     },
     "planned": {
       "infinite": false,
-      "number": 3,
+      "number": 0,
       "set": true
     },
-    "start": 1763129091,
-    "submission": 1763129088,
+    "start": 1780140251,
+    "submission": 1780140251,
     "suspended": 0,
     "system": {
       "microseconds": 0,
@@ -308,6 +321,18 @@
         "id": 5,
         "name": "",
         "type": "billing"
+      },
+      {
+        "count": 4,
+        "id": 1001,
+        "name": "gpu",
+        "type": "gres"
+      },
+      {
+        "count": 4,
+        "id": 1002,
+        "name": "gpu:h100",
+        "type": "gres"
       }
     ],
     "requested": [
@@ -334,19 +359,24 @@
         "id": 5,
         "name": "",
         "type": "billing"
+      },
+      {
+        "count": 4,
+        "id": 1001,
+        "name": "gpu",
+        "type": "gres"
       }
     ]
   },
   "tres_per_job": "",
   "tres_per_node": "",
   "tres_per_socket": "",
-  "tres_per_task": "gres/gpu=2",
-  "tres_req_str": "cpu=2,mem=1G,node=1,billing=2",
-  "used_gres": "",
-  "user": "mcarrillo",
+  "tres_per_task": "gres/gpu:2",
+  "tres_req_str": "cpu=2,mem=1G,node=1,billing=2,gres/gpu=4",
+  "user": "tkirby",
   "wckey": {
     "flags": [],
     "wckey": ""
   },
-  "working_directory": "/home/mcarrillo"
+  "working_directory": "/home/tkirby"
 }

@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-import json
 import logging
 from functools import wraps
 import asyncio
@@ -13,8 +12,6 @@ import jinja2
 from flask import Response, current_app, jsonify, request, abort, render_template
 import aiohttp
 from rfl.web.tokens import check_jwt
-from rfl.authentication.user import AnonymousUser
-from rfl.authentication.errors import LDAPAuthenticationError
 from rfl.core.asyncio import asyncio_run
 
 from ..markdown import render_html
@@ -43,55 +40,6 @@ def validate_cluster(view):
 
 def version():
     return Response(f"Slurm-web gateway v{get_version()}\n", mimetype="text/plain")
-
-
-def login():
-    idents = json.loads(request.data)
-    # Check authentication is enabled or fail with 500
-    if not current_app.settings.authentication.enabled:
-        logger.warning(
-            "Authentication attempt from user %s but authentication is disabled",
-            idents["user"],
-        )
-        abort(500, "Unable to authenticate")
-    try:
-        user = current_app.authentifier.login(
-            user=idents["user"], password=idents["password"]
-        )
-    except LDAPAuthenticationError as err:
-        logger.warning(
-            "LDAP authentication error for user %s: %s", idents["user"], str(err)
-        )
-        abort(401, str(err))
-    logger.info("User %s authenticated successfully", user)
-    # generate token
-    token = current_app.jwt.generate(
-        user=user, duration=current_app.settings.jwt.duration
-    )
-    return jsonify(
-        result="Authentication successful",
-        token=token,
-        fullname=user.fullname,
-        groups=user.groups,
-    )
-
-
-def anonymous():
-    # Check authentication is disabled or fail with 401
-    if current_app.settings.authentication.enabled:
-        logger.warning(
-            "Anonymous access attempt but authentication is enabled",
-        )
-        abort(401, "Unauthorized anonymous access")
-    # Generate token
-    token = current_app.jwt.generate(
-        user=AnonymousUser(),
-        duration=current_app.settings.jwt.duration,
-    )
-    return jsonify(
-        result="Successful anonymous access",
-        token=token,
-    )
 
 
 def message_login():
@@ -152,6 +100,9 @@ async def get_cluster(agent):
             "infrastructure": agent.racksdb.infrastructure,
             "metrics": agent.metrics,
             "cache": agent.cache,
+            "slurmdbd": {
+                "jobs_max_hours": agent.slurmdbd.jobs_max_hours,
+            },
             "permissions": permissions,
         }
 
@@ -296,6 +247,12 @@ def jobs(cluster: str):
 
 @check_jwt
 @validate_cluster
+def jobs_past(cluster: str):
+    return proxy_agent(cluster, "jobs/past", request.token)
+
+
+@check_jwt
+@validate_cluster
 def job(cluster: str, job: int):
     return proxy_agent(cluster, f"job/{job}", request.token)
 
@@ -338,6 +295,12 @@ def accounts(cluster: str):
 
 @check_jwt
 @validate_cluster
+def associations(cluster: str):
+    return proxy_agent(cluster, "associations", request.token)
+
+
+@check_jwt
+@validate_cluster
 def metrics(cluster: str, metric: str):
     return proxy_agent(cluster, f"metrics/{metric}", request.token)
 
@@ -355,19 +318,23 @@ def racksdb(cluster: str, query: str):
 
 
 def ui_config():
-    return jsonify(
-        {
-            "API_SERVER": (
-                current_app.settings.ui.host.geturl()
-                if current_app.settings.ui.host is not None
-                else f"http://localhost:{current_app.settings.service.port}"
-            ),
-            "AUTHENTICATION": current_app.settings.authentication.enabled,
-            "RACKSDB_ROWS_LABELS": current_app.settings.ui.racksdb_rows_labels,
-            "RACKSDB_RACKS_LABELS": current_app.settings.ui.racksdb_racks_labels,
-            "VERSION": get_version(),
-        }
-    )
+    config = {
+        "API_SERVER": (
+            current_app.settings.ui.host.geturl()
+            if current_app.settings.ui.host is not None
+            else f"http://localhost:{current_app.settings.service.port}"
+        ),
+        "AUTHENTICATION": current_app.settings.authentication.enabled,
+        "RACKSDB_ROWS_LABELS": current_app.settings.ui.racksdb_rows_labels,
+        "RACKSDB_RACKS_LABELS": current_app.settings.ui.racksdb_racks_labels,
+        "VERSION": get_version(),
+    }
+    if current_app.settings.authentication.enabled:
+        config["AUTHENTICATION_METHOD"] = current_app.settings.authentication.method
+    # If UI is enabled, add branding configuration to the response.
+    if current_app.frontend is not None:
+        config.update(current_app.frontend.runtime_config(current_app.prefix))
+    return jsonify(config)
 
 
 def ui_files(name="index.html"):
@@ -377,5 +344,4 @@ def ui_files(name="index.html"):
         or name.startswith("logo/")
     ):
         return current_app.send_static_file(name)
-    else:
-        return current_app.send_static_file("index.html")
+    return current_app.send_static_file("index.html")

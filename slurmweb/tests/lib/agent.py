@@ -4,11 +4,13 @@
 #
 # SPDX-License-Identifier: MIT
 
+import builtins
 import unittest
 from unittest import mock
 import tempfile
 import os
-
+import sys
+from importlib.util import find_spec
 
 import werkzeug
 from flask import Blueprint, jsonify
@@ -18,13 +20,28 @@ from rfl.authentication.user import AuthenticatedUser, AnonymousUser
 from rfl.permissions.rbac import ANONYMOUS_ROLE
 from slurmweb.apps import SlurmwebAppSeed
 from slurmweb.apps.agent import SlurmwebAppAgent
-from racksdb.errors import RacksDBFormatError, RacksDBSchemaError
 
 from .utils import (
     mock_slurmrestd_responses,
     SlurmwebAssetUnavailable,
     SlurmwebCustomTestResponse,
 )
+
+
+def is_racksdb_available():
+    """Check if RacksDB is available for testing."""
+    return find_spec("racksdb") is not None
+
+
+def _racksdb_import_blocker():
+    real_import = builtins.__import__
+
+    def import_mock(name, globals=None, locals=None, fromlist=(), level=0):
+        if level == 0 and (name == "racksdb" or name.startswith("racksdb.")):
+            raise ModuleNotFoundError("No module named 'racksdb'")
+        return real_import(name, globals, locals, fromlist, level)
+
+    return import_mock
 
 
 CONF_TPL = """
@@ -38,9 +55,9 @@ key={{ key }}
 definition={{ policy_defs }}
 vendor_roles={{ policy }}
 
-{% if not racksdb %}
+{% if racksdb is not none %}
 [racksdb]
-enabled=no
+enabled={{ 'yes' if racksdb else 'no' }}
 {% endif %}
 
 [slurmrestd]
@@ -77,7 +94,12 @@ class FakeRacksDBWebBlueprint(Blueprint):
 
 class TestAgentConfBase(unittest.TestCase):
     def setup_agent_conf(
-        self, slurmrestd_parameters=None, racksdb=True, metrics=False, cache=False
+        self,
+        slurmrestd_parameters=None,
+        racksdb=None,
+        metrics=False,
+        cache=False,
+        policy_ini=None,
     ):
         # Generate JWT signing key
         self.key = tempfile.NamedTemporaryFile(mode="w+")
@@ -96,8 +118,15 @@ class TestAgentConfBase(unittest.TestCase):
         # Policy definition path
         policy_defs = os.path.join(vendor_path, "policy.yml")
 
-        # Policy path
-        policy = os.path.join(vendor_path, "policy.ini")
+        # Policy roles path (vendor default or custom content for tests)
+        self.policy = None
+        if policy_ini is not None:
+            self.policy = tempfile.NamedTemporaryFile(mode="w+", suffix=".ini")
+            self.policy.write(policy_ini)
+            self.policy.flush()
+            policy = self.policy.name
+        else:
+            policy = os.path.join(vendor_path, "policy.ini")
 
         # Generate configuration file
         self.conf = tempfile.NamedTemporaryFile(mode="w+")
@@ -138,30 +167,76 @@ class TestAgentBase(TestSlurmrestdClient):
     def setup_client(
         self,
         slurmrestd_parameters=None,
-        racksdb=True,
+        racksdb=None,
         metrics=False,
         cache=False,
+        policy_ini=None,
         racksdb_format_error=False,
         racksdb_schema_error=False,
+        racksdb_import_error=False,
         anonymous_user=False,
         anonymous_enabled=True,
         use_token=True,
     ):
+        # Check if RacksDB is available for mocking
+        if not racksdb_import_error:
+            try:
+                from racksdb.errors import RacksDBFormatError, RacksDBSchemaError
+            except ModuleNotFoundError:
+                # RacksDB not available, disable it in config
+                racksdb = False
+
         self.setup_agent_conf(
             slurmrestd_parameters=slurmrestd_parameters,
             racksdb=racksdb,
             metrics=metrics,
             cache=cache,
+            policy_ini=policy_ini,
         )
 
-        # Start the app with mocked RacksDB web blueprint
-        with mock.patch("slurmweb.apps.agent.RacksDBWebBlueprint") as m:
-            if racksdb_format_error:
-                m.side_effect = RacksDBFormatError("fake db format error")
-            elif racksdb_schema_error:
-                m.side_effect = RacksDBSchemaError("fake db schema error")
+        if racksdb is not False:
+            app_seed = SlurmwebAppSeed.with_parameters(
+                debug=False,
+                log_flags=["ALL"],
+                log_component=None,
+                debug_flags=[],
+                conf_defs=self.conf_defs,
+                conf=self.conf.name,
+            )
+            if racksdb_import_error:
+                # RacksDB is installed in the test environment but we must simulate a
+                # missing library.
+                #
+                # A simple mock.patch side_effect on RacksDBWebBlueprint is not enough:
+                # the agent catches ModuleNotFoundError on the import statements in
+                # _init_racksdb(), before the blueprint class is used.
+                #
+                # Earlier imports in this test helper also cache racksdb in
+                # sys.modules, so the agent would reuse cached modules and never raise.
+                # Drop cached modules so lazy-import goes through builtins.__import__,
+                # then block that path to reproduce a missing optional dependency.
+                stashed_racksdb_modules = {}
+                for key in list(sys.modules):
+                    if key == "racksdb" or key.startswith("racksdb."):
+                        stashed_racksdb_modules[key] = sys.modules.pop(key)
+                try:
+                    with mock.patch("builtins.__import__", _racksdb_import_blocker()):
+                        self.app = SlurmwebAppAgent(app_seed)
+                finally:
+                    # Restore modules for other tests in the same process.
+                    sys.modules.update(stashed_racksdb_modules)
             else:
-                m.return_value = FakeRacksDBWebBlueprint()
+                # RacksDB is available, start app with mocked RacksDB web blueprint
+                with mock.patch("racksdb.web.app.RacksDBWebBlueprint") as m:
+                    if racksdb_format_error:
+                        m.side_effect = RacksDBFormatError("fake db format error")
+                    elif racksdb_schema_error:
+                        m.side_effect = RacksDBSchemaError("fake db schema error")
+                    else:
+                        m.return_value = FakeRacksDBWebBlueprint()
+                    self.app = SlurmwebAppAgent(app_seed)
+        else:
+            # RacksDB disabled in config or not available
             self.app = SlurmwebAppAgent(
                 SlurmwebAppSeed.with_parameters(
                     debug=False,
@@ -172,6 +247,7 @@ class TestAgentBase(TestSlurmrestdClient):
                     conf=self.conf.name,
                 )
             )
+
         if not anonymous_enabled:
             self.app.policy.disable_anonymous()
 
@@ -179,6 +255,8 @@ class TestAgentBase(TestSlurmrestdClient):
         self.conf.close()
         self.key.close()
         self.slurmrestd_key.close()
+        if self.policy is not None:
+            self.policy.close()
 
         self.app.config.update(
             {
@@ -212,26 +290,60 @@ class TestAgentBase(TestSlurmrestdClient):
             self.client.environ_base["HTTP_AUTHORIZATION"] = "Bearer " + token
 
 
-class RemoveActionInPolicy:
-    """Context manager to temporarily remove an action from a role in policy."""
+class ModifyActionsInPolicy:
+    """Context manager to temporarily add or remove actions from a role in policy.
 
-    def __init__(self, policy, role, action):
+    The same changes are applied to the anonymous role when the actions are
+    defined there.
+    """
+
+    @staticmethod
+    def _policy_actions(actions):
+        if not actions:
+            return ()
+        if isinstance(actions, str):
+            return (actions,)
+        return tuple(actions)
+
+    def __init__(self, policy, role, *, remove=(), add=()):
         self.policy = policy
         self.role = role
-        self.action = action
-        self.removed_in_anonymous = False
+        self.remove = self._policy_actions(remove)
+        self.add = self._policy_actions(add)
+        self._removed = {}
+        self._added = {}
+
+    def _apply(self, role_name, role_actions):
+        removed = set()
+        added = set()
+        for action in self.remove:
+            if action in role_actions:
+                role_actions.remove(action)
+                removed.add(action)
+        for action in self.add:
+            if action not in role_actions:
+                role_actions.add(action)
+                added.add(action)
+        if removed:
+            self._removed[role_name] = removed
+        if added:
+            self._added[role_name] = added
+
+    def _restore(self, role_name, role_actions):
+        for action in self._removed.get(role_name, ()):
+            role_actions.add(action)
+        for action in self._added.get(role_name, ()):
+            role_actions.discard(action)
 
     def __enter__(self):
+        self._removed = {}
+        self._added = {}
         for _role in self.policy.loader.roles:
-            if _role.name == self.role:
-                _role.actions.remove(self.action)
-            if _role.name == ANONYMOUS_ROLE and self.action in _role.actions:
-                _role.actions.remove(self.action)
-                self.removed_in_anonymous = True
+            if _role.name in (self.role, ANONYMOUS_ROLE):
+                self._apply(_role.name, _role.actions)
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         for _role in self.policy.loader.roles:
-            if _role.name == self.role:
-                _role.actions.add(self.action)
-            if _role.name == ANONYMOUS_ROLE and self.removed_in_anonymous:
-                _role.actions.add(self.action)
+            if _role.name in self._removed or _role.name in self._added:
+                self._restore(_role.name, _role.actions)

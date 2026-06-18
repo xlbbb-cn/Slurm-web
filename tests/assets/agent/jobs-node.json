@@ -1,26 +1,27 @@
 [
   {
-    "account": "optic",
+    "account": "biology",
     "cpus": {
       "infinite": false,
-      "number": 1,
+      "number": 2,
       "set": true
     },
     "gres_detail": [],
-    "job_id": 59,
+    "job_id": 6538,
     "job_state": [
-      "CANCELLED"
+      "RUNNING"
     ],
+    "name": "md-task-0017",
     "node_count": {
       "infinite": false,
       "number": 1,
       "set": true
     },
-    "nodes": "cn3",
+    "nodes": "cn2",
     "partition": "normal",
     "priority": {
       "infinite": false,
-      "number": 90,
+      "number": 636,
       "set": true
     },
     "qos": "normal",
@@ -32,13 +33,56 @@
     "state_reason": "None",
     "tasks": {
       "infinite": false,
-      "number": 1,
+      "number": 2,
       "set": true
     },
     "tres_per_job": "",
     "tres_per_node": "",
     "tres_per_socket": "",
     "tres_per_task": "",
-    "user_name": "rcarson"
+    "user_name": "rpowers"
+  },
+  {
+    "account": "biology",
+    "cpus": {
+      "infinite": false,
+      "number": 2,
+      "set": true
+    },
+    "gres_detail": [],
+    "job_id": 6539,
+    "job_state": [
+      "RUNNING"
+    ],
+    "name": "qe-training-168",
+    "node_count": {
+      "infinite": false,
+      "number": 1,
+      "set": true
+    },
+    "nodes": "cn2",
+    "partition": "normal",
+    "priority": {
+      "infinite": false,
+      "number": 636,
+      "set": true
+    },
+    "qos": "normal",
+    "sockets_per_node": {
+      "infinite": false,
+      "number": 0,
+      "set": false
+    },
+    "state_reason": "None",
+    "tasks": {
+      "infinite": false,
+      "number": 2,
+      "set": true
+    },
+    "tres_per_job": "",
+    "tres_per_node": "",
+    "tres_per_socket": "",
+    "tres_per_task": "",
+    "user_name": "rpowers"
   }
 ]

@@ -10,14 +10,22 @@ from pathlib import Path
 from ..version import get_version
 from . import SlurmwebExecBase
 from ..apps import SlurmwebAppSeed
-from ..apps.ldap import SlurmwebAppLDAPCheck
-from ..apps.gateway import SlurmwebAppGateway
+from ..apps._defaults import SlurmwebAppDefaults
 
 
 class SlurmwebExecLDAPCheck(SlurmwebExecBase):
+    """CLI entrypoint for the LDAP settings check utility."""
+
     @staticmethod
-    def seed(args=None):
-        parser = argparse.ArgumentParser(description=SlurmwebAppLDAPCheck.NAME)
+    def register_subcommand(
+        subparsers: argparse._SubParsersAction,
+    ) -> argparse.ArgumentParser:
+        """Declare the 'ldap-check' subcommand arguments on the provided subparsers."""
+        parser = subparsers.add_parser(
+            "ldap-check",
+            help="Check LDAP settings for Slurm-web",
+            description="slurm-web ldap-check",
+        )
         parser.add_argument(
             "-v",
             "--version",
@@ -54,18 +62,21 @@ class SlurmwebExecLDAPCheck(SlurmwebExecBase):
             help=(
                 "Path to configuration settings definition file (default: %(default)s)"
             ),
-            default=SlurmwebAppGateway.SETTINGS_DEFINITION,
+            default=SlurmwebAppDefaults.GATEWAY.settings_definition,
             type=Path,
         )
         parser.add_argument(
             "--conf",
             help="Path to configuration file (default: %(default)s)",
-            default=SlurmwebAppGateway.SITE_CONFIGURATION,
+            default=SlurmwebAppDefaults.GATEWAY.site_configuration,
             type=Path,
         )
 
-        return parser.parse_args(args=args, namespace=SlurmwebAppSeed())
+        parser.set_defaults(app=SlurmwebExecLDAPCheck.app)
+        return parser
 
     @staticmethod
-    def app(args=None):
-        return SlurmwebAppLDAPCheck(SlurmwebExecLDAPCheck.seed(args=args))
+    def app(seed: SlurmwebAppSeed):
+        from ..apps.ldap import SlurmwebAppLDAPCheck
+
+        return SlurmwebAppLDAPCheck(seed)

@@ -9,7 +9,6 @@ import logging
 
 from flask import Response, current_app, jsonify, abort, request
 from rfl.web.tokens import rbac_action, check_jwt
-from racksdb.version import get_version as racksdb_get_version
 
 from ..version import get_version
 from ..errors import SlurmwebCacheError, SlurmwebMetricsDBError
@@ -26,6 +25,16 @@ from ..slurmrestd.errors import (
 logger = logging.getLogger(__name__)
 
 
+def racksdb_get_version():
+    """Get RacksDB version if available, or return 'N/A' if not installed."""
+    try:
+        from racksdb.version import get_version
+
+        return get_version()
+    except ModuleNotFoundError:
+        return "N/A (not installed)"
+
+
 def version():
     return Response(f"Slurm-web agent v{get_version()}\n", mimetype="text/plain")
 
@@ -36,9 +45,12 @@ def info():
         "metrics": current_app.settings.metrics.enabled,
         "cache": current_app.settings.cache.enabled,
         "racksdb": {
-            "enabled": current_app.settings.racksdb.enabled,
+            "enabled": current_app.racksdb_active,
             "infrastructure": current_app.settings.racksdb.infrastructure,
             "version": racksdb_get_version(),
+        },
+        "slurmdbd": {
+            "jobs_max_hours": current_app.settings.slurmdbd.jobs_max_hours,
         },
         "version": get_version(),
     }
@@ -118,12 +130,12 @@ def slurmrest(method: str, *args: Tuple[Any, ...]):
     return getattr(current_app.slurmrestd, method)(*args)
 
 
-@rbac_action("view-stats")
+@rbac_action("stats-view")
 def stats():
     total = 0
     running = 0
 
-    for job in slurmrest("jobs"):
+    for job in current_app.slurmrestd.jobs():
         total += 1
         if "RUNNING" in job["job_state"]:
             running += 1
@@ -150,48 +162,106 @@ def stats():
     )
 
 
-@rbac_action("view-jobs")
+@check_jwt
 def jobs():
+    user = request.user
+    if current_app.policy.allowed_user_action(user, "jobs-view"):
+        own_only = False
+    elif current_app.policy.allowed_user_action(user, "jobs-view-own"):
+        own_only = True
+    else:
+        abort(403, "User is not allowed to perform action jobs-view or jobs-view-own")
     node = request.args.get("node")
     if node:
-        return jsonify(slurmrest("jobs_by_node", node))
+        jobs_list = slurmrest("jobs_by_node", node)
     else:
-        return jsonify(slurmrest("jobs"))
+        jobs_list = slurmrest("jobs_current")
+    if own_only:
+        login = user.login.lower()
+        jobs_list = [
+            job for job in jobs_list if job.get("user_name", "").lower() == login
+        ]
+    return jsonify(jobs_list)
 
 
-@rbac_action("view-jobs")
+@check_jwt
 def job(job: int):
-    return jsonify(slurmrest("job", job))
+    user = request.user
+    if current_app.policy.allowed_user_action(user, "jobs-view"):
+        own_only = False
+    elif current_app.policy.allowed_user_action(user, "jobs-view-own"):
+        own_only = True
+    else:
+        abort(403, "User is not allowed to perform action jobs-view or jobs-view-own")
+    job_data = slurmrest("job", job)
+    if own_only and job_data.get("user", "").lower() != user.login.lower():
+        abort(404, "Job not found")
+    return jsonify(job_data)
 
 
-@rbac_action("view-nodes")
+@check_jwt
+def jobs_past():
+    user = request.user
+    if current_app.policy.allowed_user_action(user, "jobs-view-past"):
+        own_only = False
+    elif current_app.policy.allowed_user_action(user, "jobs-view-past-own"):
+        own_only = True
+    else:
+        abort(
+            403,
+            "User is not allowed to perform action "
+            "jobs-view-past or jobs-view-past-own",
+        )
+    settings = current_app.settings.slurmdbd
+    if "hours" not in request.args:
+        abort(400, "Missing hours query parameter")
+    try:
+        hours = int(request.args.get("hours"))
+    except (TypeError, ValueError):
+        abort(400, "Invalid hours query parameter")
+    hours = max(1, min(hours, settings.jobs_max_hours))
+    # Always fetch all past jobs from slurmrestd (shared cache); own-only filter
+    # is applied here so restricted users never receive other users' jobs.
+    jobs_list = slurmrest("jobs_past", hours)
+    if own_only:
+        login = user.login.lower()
+        jobs_list = [job for job in jobs_list if job.get("user", "").lower() == login]
+    return jsonify(jobs_list)
+
+
+@rbac_action("nodes-view")
 def nodes():
     return jsonify(slurmrest("nodes"))
 
 
-@rbac_action("view-nodes")
+@rbac_action("nodes-view")
 def node(name: str):
     return jsonify(slurmrest("node", name))
 
 
-@rbac_action("view-partitions")
+@rbac_action("partitions-view")
 def partitions():
     return jsonify(slurmrest("partitions"))
 
 
-@rbac_action("view-qos")
+@rbac_action("qos-view")
 def qos():
     return jsonify(slurmrest("qos"))
 
 
-@rbac_action("view-reservations")
+@rbac_action("reservations-view")
 def reservations():
     return jsonify(slurmrest("reservations"))
 
 
-@rbac_action("view-accounts")
+@rbac_action("accounts-view")
 def accounts():
     return jsonify(slurmrest("accounts"))
+
+
+@rbac_action("associations-view")
+def associations():
+    return jsonify(slurmrest("associations"))
 
 
 @rbac_action("cache-view")
@@ -238,10 +308,10 @@ def metrics(metric):
 
     # Dictionnary of metrics and required policy actions associations
     metrics_policy_actions = {
-        "nodes": "view-nodes",
-        "cores": "view-nodes",
-        "gpus": "view-nodes",
-        "jobs": "view-jobs",
+        "nodes": "nodes-view",
+        "cores": "nodes-view",
+        "gpus": "nodes-view",
+        "jobs": "jobs-view",
         "cache": "cache-view",
     }
 

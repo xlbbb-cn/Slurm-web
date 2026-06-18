@@ -59,7 +59,7 @@ const runtimeStore = useRuntimeStore()
               <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 Filters
                 <span
-                  class="text-slurmweb dark:text-slurmweb-light dark:bg-slurmweb-verydark ml-3 hidden rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium md:inline-block"
+                  class="text-slurmweb dark:text-slurmweb-light dark:bg-slurmweb-verydark bg-slurmweb-light ml-3 hidden rounded-full px-2.5 py-0.5 text-xs font-medium md:inline-block"
                   >{{ nbNodes }}</span
                 >
               </h2>
@@ -124,7 +124,7 @@ const runtimeStore = useRuntimeStore()
               </Disclosure>
 
               <Disclosure
-                v-if="runtimeStore.hasPermission('view-partitions')"
+                v-if="runtimeStore.hasPermission('partitions-view')"
                 as="div"
                 class="border-t border-t-gray-200 px-4 py-6 dark:border-t-gray-600"
                 v-slot="{ open }"
